@@ -1,14 +1,24 @@
 <script>
+	import { verseStore } from './stores.js';
+	import Verse from './Verse.svelte';
+
 	export let title;
+
+	const verses = $verseStore;
 </script>
 
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
 
+<!-- <svelte:window bind:scrollX={scrollX} bind:scrollY={scrollY} /> -->
+
 <main>
 	<h1>{title}</h1>
-</main>
+	{#each verses as verse}
+		<Verse lineA={verse.a} lineB={verse.b} piDigit={verse.piDigit} />
+	{/each}
+ </main>
 
 <style>
 	main {
