@@ -1,5 +1,5 @@
 <script>
-	import { verseStore } from './stores.js';
+	import { verseStore } from './stores/stores.js';
 	import Verse from './Verse.svelte';
 
 	export let title;

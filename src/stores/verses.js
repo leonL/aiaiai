@@ -1,5 +1,3 @@
-import { readable } from 'svelte/store';
-
 const verses = [
   {
     piDigit: 3,
@@ -18,4 +16,4 @@ const verses = [
   }
 ];
 
-export const verseStore = readable(verses);
+export default verses;
