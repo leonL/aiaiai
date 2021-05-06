@@ -9,11 +9,13 @@
 
 	const verses = $verseStore;
 
-	let height;
+	let totalScrollHeight;
 	let scrollY;
+	let windowHeight;
+	let percentScrolled;
 	
-	$: console.log(`the current scrollY of the window is ${scrollY}`);
-	
+	$: percentScrolled = scrollY / (totalScrollHeight - windowHeight);
+
 	onMount(() => {
 		animateScroll.scrollToBottom({
 			duration: 10000
@@ -25,9 +27,9 @@
   <title>{title}</title>
 </svelte:head>
 
-<svelte:window bind:scrollY={scrollY} />
+<svelte:window bind:scrollY={scrollY} bind:outerHeight={windowHeight} />
 
-<main bind:clientHeight={height}>
+<main bind:clientHeight={totalScrollHeight}>
 	<h1>{title}</h1>
 	{#each verses as verse}
 		<Verse lineA={verse.a} lineB={verse.b} piDigit={verse.piDigit} />
