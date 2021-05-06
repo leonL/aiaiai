@@ -1,26 +1,36 @@
 <script>
-	import { verseStore } from './stores/stores.js';
 	import { onMount } from 'svelte';
 	import * as animateScroll from 'svelte-scrollto';
+	import { createEventDispatcher } from 'svelte';
 
+	import { verseStore } from './stores/stores.js';
+	import { piStore } from './stores/stores.js';
 	import Verse from './Verse.svelte';
+		
+	const dispatch = createEventDispatcher();
 
 	export let title;
 
 	const verses = $verseStore;
-
-	let totalScrollHeight;
-	let scrollY;
-	let windowHeight;
-	let percentScrolled;
+	const piDigits = $piStore;
+	let totalPoemHeight, scrollY, windowHeight;
 	
-	$: percentScrolled = scrollY / (totalScrollHeight - windowHeight);
+	$: {
+		if (scrollY / (totalPoemHeight - windowHeight)) {
+			console.log('scroll');
+		};
+	}
 
 	onMount(() => {
 		animateScroll.scrollToBottom({
-			duration: 10000
+			duration: 5000
 		});
 	});
+
+	function getVerse(verseNumber) {
+		let versePool = verses.filter(v => v.piDigit === verseNumber );
+		return versePool[0];
+	};
 </script>
 
 <svelte:head>
@@ -29,10 +39,10 @@
 
 <svelte:window bind:scrollY={scrollY} bind:outerHeight={windowHeight} />
 
-<main bind:clientHeight={totalScrollHeight}>
+<main bind:clientHeight={totalPoemHeight}>
 	<h1>{title}</h1>
-	{#each verses as verse}
-		<Verse lineA={verse.a} lineB={verse.b} piDigit={verse.piDigit} />
+	{#each piDigits as digit}
+		<Verse lineA={getVerse(digit).a} lineB={getVerse(digit).b} piDigit={getVerse(digit).piDigit} />
 	{/each}
 </main>
 
