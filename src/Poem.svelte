@@ -4,7 +4,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import { verseStore } from './stores/stores.js';
-	import { piStore } from './stores/stores.js';
+	import { piCountdownStore } from './stores/stores.js';
 	import Verse from './Verse.svelte';
 		
 	const dispatch = createEventDispatcher();
@@ -12,14 +12,7 @@
 	export let title;
 
 	const verses = $verseStore;
-	const piDigits = $piStore;
-	let totalPoemHeight, scrollY, windowHeight;
-	
-	$: {
-		if (scrollY / (totalPoemHeight - windowHeight)) {
-			console.log('scroll');
-		};
-	}
+	const piDigits = $piCountdownStore;
 
 	onMount(() => {
 		animateScroll.scrollToBottom({
@@ -37,9 +30,7 @@
   <title>{title}</title>
 </svelte:head>
 
-<svelte:window bind:scrollY={scrollY} bind:outerHeight={windowHeight} />
-
-<main bind:clientHeight={totalPoemHeight}>
+<main>
 	<h1>{title}</h1>
 	{#each piDigits as digit}
 		<Verse lineA={getVerse(digit).a} lineB={getVerse(digit).b} piDigit={getVerse(digit).piDigit} />
