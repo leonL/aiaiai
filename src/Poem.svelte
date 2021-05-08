@@ -1,18 +1,14 @@
 <script>
-	import { onMount } from 'svelte';
-	import * as animateScroll from 'svelte-scrollto';
-	import { createEventDispatcher } from 'svelte';
-
-	import { verseStore } from './stores/stores.js';
-	import { piCountdownStore } from './stores/stores.js';
+	import { onMount, createEventDispatcher } from 'svelte';
 	import Verse from './Verse.svelte';
-		
-	const dispatch = createEventDispatcher();
+	import { verseStore, piCountdownStore } from './stores/stores.js';
+	import * as animateScroll from 'svelte-scrollto';
 
 	export let title;
-
-	const verses = $verseStore;
-	const piDigits = $piCountdownStore;
+		
+	const dispatch = createEventDispatcher(), 
+		verses = $verseStore, 
+		piCountdown = $piCountdownStore;
 
 	onMount(() => {
 		animateScroll.scrollToBottom({
@@ -21,7 +17,7 @@
 	});
 
 	function getVerse(verseNumber) {
-		let versePool = verses.filter(v => v.piDigit === verseNumber );
+		let versePool = verses.filter(v => v.number === verseNumber );
 		return versePool[0];
 	};
 </script>
@@ -32,8 +28,8 @@
 
 <main>
 	<h1>{title}</h1>
-	{#each piDigits as digit}
-		<Verse lineA={getVerse(digit).a} lineB={getVerse(digit).b} piDigit={getVerse(digit).piDigit} />
+	{#each piCountdown.slice(0, 50) as digit}
+		<Verse lineA={getVerse(digit).a} lineB={getVerse(digit).b} number={getVerse(digit).number} />
 	{/each}
 </main>
 
