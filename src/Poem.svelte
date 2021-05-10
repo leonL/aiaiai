@@ -1,25 +1,22 @@
 <script>
-	import { onMount, createEventDispatcher } from 'svelte';
+	import { onMount } from 'svelte';
 	import Verse from './Verse.svelte';
-	import { verseStore, piCountdownStore } from './stores/stores.js';
+	import verseStore from './stores/stores.js';
 	import * as animateScroll from 'svelte-scrollto';
 
 	export let title;
 		
-	const dispatch = createEventDispatcher(), 
-		verses = $verseStore, 
-		piCountdown = $piCountdownStore;
+	$: verses = $verseStore;
 
-	onMount(() => {
-		animateScroll.scrollToBottom({
-			duration: 5000
-		});
-	});
+	// onMount(() => {
+	// 	animateScroll.scrollToBottom({
+	// 		duration: 5000
+	// 	});
+	// });
 
-	function getVerse(verseNumber) {
-		let versePool = verses.filter(v => v.number === verseNumber );
-		return versePool[0];
-	};
+	function addVerseToPoem() {
+		verseStore.addVerse();
+	}
 </script>
 
 <svelte:head>
@@ -28,8 +25,8 @@
 
 <main>
 	<h1>{title}</h1>
-	{#each piCountdown.slice(0, 50) as digit}
-		<Verse lineA={getVerse(digit).a} lineB={getVerse(digit).b} number={getVerse(digit).number} />
+	{#each verses as verse}
+		<Verse lineA={verse.a} lineB={verse.b} number={verse.number} on:verseRead={addVerseToPoem} />
 	{/each}
 </main>
 

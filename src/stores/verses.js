@@ -176,4 +176,4 @@ const verses = [
   }
 ];
 
-export default verses; // verses.length == 45
+export default verses; // verses.length == 35
