@@ -8,12 +8,6 @@
 		
 	$: verses = $verseStore;
 
-	// onMount(() => {
-	// 	animateScroll.scrollToBottom({
-	// 		duration: 5000
-	// 	});
-	// });
-
 	function addVerseToPoem() {
 		verseStore.addVerse();
 	}
