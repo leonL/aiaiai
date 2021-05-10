@@ -1,12 +1,11 @@
 <script>
-	import { onMount } from 'svelte';
 	import Verse from './Verse.svelte';
 	import verseStore from './stores/stores.js';
-	import * as animateScroll from 'svelte-scrollto';
 
 	export let title;
 		
 	$: verses = $verseStore;
+	let firstVerse = verses[0];
 
 	function addVerseToPoem() {
 		verseStore.addVerse();
@@ -19,9 +18,9 @@
 
 <main>
 	<h1>{title}</h1>
-	{#each verses as verse}
-		<Verse lineA={verse.a} lineB={verse.b} number={verse.number} on:verseRead={addVerseToPoem} />
-	{/each}
+	<!-- {#each verses as verse} -->
+		<Verse lineA={firstVerse.a} lineB={firstVerse.b} number={firstVerse.number} />
+	<!-- {/each} -->
 </main>
 
 <style>
