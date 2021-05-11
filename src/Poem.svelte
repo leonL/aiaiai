@@ -1,30 +1,62 @@
 <script>
+	import { onMount } from 'svelte';
+	import { flip } from 'svelte/animate';
+
+	import amIWhatIam from './data/amIWhatIAm.js';
+	import piCountdown from './data/piCointdown.js';
+	
 	import Verse from './Verse.svelte';
-	import {flip} from 'svelte/animate';
-	import amIWhatIam from './stores/verses.js';
 
 	export let title;
-	
-	let verses = [amIWhatIam[0]];
+
+	let countdown = piCountdown, countdownLength = countdown.length;
+	let verseIndex = 0, poemLength = amIWhatIam.length;
+
+	let firstVerseObj = { ...amIWhatIam[verseIndex], index: verseIndex };
+	let verses = [firstVerseObj];
+
+	let poemElement;
 
 	function addVerse() {
-		verses = [...verses, amIWhatIam[verses.length]];
-	}
+		let nextVerse, nextCountdownIndex = ++verseIndex % countdownLength
 
+		if (nextCountdownIndex < poemLength) {
+			nextVerse = amIWhatIam[nextCountdownIndex];
+		} else {
+			let nextVersePid = countdown[nextCountdownIndex];
+			nextVerse = amIWhatIam.filter(v => v.pid === nextVersePid)[0];
+		}
+		let nextVesrseObj = { ...nextVerse, index: verseIndex}
+		let nextVerseSet = [...verses, nextVesrseObj];
+
+		let firstVerseEl = poemElement.querySelector(".verse"),
+			elBottomPosition = firstVerseEl.getBoundingClientRect().bottom;	
+
+		if (elBottomPosition < 150) nextVerseSet.shift();
+
+		verses = nextVerseSet;
+		return true;
+	}
+	
 	const options = {duration: 500};
+
+	onMount(async () => {
+		setInterval(() => {
+			addVerse();
+		}, 1000);
+	});
 </script>
 
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
 
-<main>
-	{#each verses as verse, i (i)}
+<main bind:this={poemElement}>
+	{#each verses as verse (verse.index)}
 		<div animate:flip={options} class="verse">
 			<Verse lineA={verse.a} lineB={verse.b} number={verse.number} />
 		</div>
 	{/each}
-	<button on:click={addVerse}>Add</button>
 </main>
 
 
@@ -44,15 +76,4 @@
 	.verse {
     padding-bottom: 10px;
   }
-/* 
-	h1 {
-		font-size: 4em;
-		font-weight: 100;
-	} */
-
-	@media (min-width: 640px) {
-		main {
-			max-width: none;
-		}
-	}
 </style>
