@@ -53,11 +53,17 @@
 	function suspendDoomScroll() {
 		clearInterval(doomScrollInterval);
 	};
+
+	function handleKeydown(event) {
+		if (event.keyCode === 73) suspendDoomScroll();
+	}
 </script>
 
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
+
+<svelte:window on:keydown={handleKeydown}/>
 
 <main bind:this={poemElement}>
 	{#each verses as verse (verse.index)}
