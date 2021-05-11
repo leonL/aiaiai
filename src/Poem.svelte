@@ -61,7 +61,8 @@
 
 <main bind:this={poemElement}>
 	{#each verses as verse (verse.index)}
-		<div animate:flip={options} class="verse" on:mousedown={suspendDoomScroll} on:mouseup={doomScroll}>
+		<div animate:flip={options} class="verse" on:mousedown={suspendDoomScroll} on:touchstart={suspendDoomScroll} 
+			on:mouseup={doomScroll} on:touchend={doomScroll}>
 			<Verse lineA={verse.a} lineB={verse.b} number={verse.number} />
 		</div>
 	{/each}
