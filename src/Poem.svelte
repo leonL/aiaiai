@@ -32,7 +32,7 @@
 		let firstVerseEl = poemElement.querySelector(".verse"),
 			elBottomPosition = firstVerseEl.getBoundingClientRect().bottom;	
 
-		if (elBottomPosition < 150) nextVerseSet.shift();
+		if (elBottomPosition < 0) nextVerseSet.shift();
 
 		verses = nextVerseSet;
 		return true;
@@ -65,7 +65,6 @@
 		text-align: center;
 		padding: 1em;
 		margin: 0 auto;
-		border: 1px solid black;
 		position: absolute;
 		bottom: 0;
 		top: 0;
