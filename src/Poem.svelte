@@ -15,7 +15,7 @@
 	let firstVerseObj = { ...amIWhatIam[verseIndex], index: verseIndex };
 	let verses = [firstVerseObj];
 
-	let poemElement;
+	let poemElement, doomScrollInterval;
 
 	function addVerse() {
 		let nextVerse, nextCountdownIndex = ++verseIndex % countdownLength
@@ -38,13 +38,21 @@
 		return true;
 	}
 	
-	const options = {duration: 90};
+	const options = { duration: 100 };
 
 	onMount(async () => {
-		setInterval(() => {
-			addVerse();
-		}, 100);
+		doomScroll();
 	});
+
+	function doomScroll() {
+		doomScrollInterval = setInterval(() => {
+			addVerse(); 
+		}, 100);
+	};
+
+	function suspendDoomScroll() {
+		clearInterval(doomScrollInterval);
+	};
 </script>
 
 <svelte:head>
@@ -53,7 +61,7 @@
 
 <main bind:this={poemElement}>
 	{#each verses as verse (verse.index)}
-		<div animate:flip={options} class="verse">
+		<div animate:flip={options} class="verse" on:mousedown={suspendDoomScroll} on:mouseup={doomScroll}>
 			<Verse lineA={verse.a} lineB={verse.b} number={verse.number} />
 		</div>
 	{/each}
