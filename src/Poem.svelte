@@ -38,12 +38,12 @@
 		return true;
 	}
 	
-	const options = {duration: 500};
+	const options = {duration: 90};
 
 	onMount(async () => {
 		setInterval(() => {
 			addVerse();
-		}, 1000);
+		}, 100);
 	});
 </script>
 
