@@ -1,15 +1,17 @@
 <script>
 	import Verse from './Verse.svelte';
-	import verseStore from './stores/stores.js';
+	import {flip} from 'svelte/animate';
+	import amIWhatIam from './stores/verses.js';
 
 	export let title;
-		
-	$: verses = $verseStore;
-	let firstVerse = verses[0];
+	
+	let verses = [amIWhatIam[0]];
 
-	function addVerseToPoem() {
-		verseStore.addVerse();
+	function addVerse() {
+		verses = [...verses, amIWhatIam[verses.length]];
 	}
+
+	const options = {duration: 500};
 </script>
 
 <svelte:head>
@@ -17,24 +19,36 @@
 </svelte:head>
 
 <main>
-	<h1>{title}</h1>
-	<!-- {#each verses as verse} -->
-		<Verse lineA={firstVerse.a} lineB={firstVerse.b} number={firstVerse.number} />
-	<!-- {/each} -->
+	{#each verses as verse, i (i)}
+		<div animate:flip={options} class="verse">
+			<Verse lineA={verse.a} lineB={verse.b} number={verse.number} />
+		</div>
+	{/each}
+	<button on:click={addVerse}>Add</button>
 </main>
+
 
 <style>
 	main {
 		text-align: center;
 		padding: 1em;
-		max-width: 240px;
 		margin: 0 auto;
+		border: 1px solid black;
+		position: absolute;
+		bottom: 0;
+		top: 0;
+		display: flex;
+		justify-content: flex-end;
+		flex-direction: column;
 	}
-
+	.verse {
+    padding-bottom: 10px;
+  }
+/* 
 	h1 {
 		font-size: 4em;
 		font-weight: 100;
-	}
+	} */
 
 	@media (min-width: 640px) {
 		main {

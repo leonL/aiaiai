@@ -4,7 +4,7 @@
   export let number
 </script>
 
-<div class='verse' {number} >
+<div {number} >
   <div class='line-a'>{lineA}</div>
   <div class='line-b'>{lineB}</div>
 </div>

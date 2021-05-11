@@ -1,7 +1,7 @@
 import { writable } from 'svelte/store';
 
-import amIWhatIam from './verses.js'
-import piCountdown from './piCointdown.js'
+import amIWhatIam from './verses.js';
+import piCountdown from './piCointdown.js';
 
 const {subscribe, set, update} = writable(0);
 
