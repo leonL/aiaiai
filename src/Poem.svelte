@@ -38,7 +38,7 @@
 		return true;
 	}
 	
-	const options = { duration: 100 };
+	const options = { duration: 0 };
 
 	onMount(async () => {
 		doomScroll();
@@ -47,7 +47,7 @@
 	function doomScroll() {
 		doomScrollInterval = setInterval(() => {
 			addVerse(); 
-		}, 100);
+		}, 0);
 	};
 
 	function suspendDoomScroll() {
@@ -77,15 +77,17 @@
 
 <style>
 	main {
-		text-align: center;
-		padding: 1em;
-		margin: 0 auto;
+		margin: 0;
 		position: absolute;
 		bottom: 0;
 		top: 0;
+		left: 0;
+		right: 0;
 		display: flex;
 		justify-content: flex-end;
 		flex-direction: column;
+		text-align: center;
+		font-size: 14px;
 	}
 	.verse {
     padding-bottom: 10px;
