@@ -38,7 +38,7 @@
 		return true;
 	}
 	
-	const options = { duration: 0 };
+	const options = { duration: 256 };
 
 	onMount(async () => {
 		doomScroll();
@@ -47,7 +47,7 @@
 	function doomScroll() {
 		doomScrollInterval = setInterval(() => {
 			addVerse(); 
-		}, 0);
+		}, 128);
 	};
 
 	function suspendDoomScroll() {
