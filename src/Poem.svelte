@@ -9,6 +9,8 @@
 
 	export let title;
 
+	let windowHeight;
+
 	let countdown = piCountdown, countdownLength = countdown.length;
 	let verseIndex = 0, poemLength = amIWhatIam.length;
 
@@ -24,7 +26,7 @@
 			nextVerse = amIWhatIam[nextCountdownIndex];
 		} else {
 			let nextVersePid = countdown[nextCountdownIndex];
-			nextVerse = amIWhatIam.filter(v => v.pid === nextVersePid)[0];
+			nextVerse = amIWhatIam.filter(v => v.piId === nextVersePid)[0];
 		}
 		let nextVesrseObj = { ...nextVerse, index: verseIndex}
 		let nextVerseSet = [...verses, nextVesrseObj];
@@ -35,41 +37,48 @@
 		if (elBottomPosition < 0) nextVerseSet.shift();
 
 		verses = nextVerseSet;
+		doomScroll();
 		return true;
 	}
 	
-	const options = { duration: 256 };
+	const options = { duration: 500 };
+
+	$: duration = ((verseIndex + 1) % 3 === 0) ? 5000 : 1000;
+
+	function doomScroll() {
+		doomScrollInterval = setTimeout(() => {
+			addVerse(); 
+		}, duration);
+	};
+
+	function suspendDoomScroll() {
+		clearTimeout(doomScrollInterval);
+	};
+
+	function handleKeydown(event) {
+		if (event.keyCode === 73) suspendDoomScroll();
+	};
 
 	onMount(async () => {
 		doomScroll();
 	});
 
-	function doomScroll() {
-		doomScrollInterval = setInterval(() => {
-			addVerse(); 
-		}, 128);
-	};
-
-	function suspendDoomScroll() {
-		clearInterval(doomScrollInterval);
-	};
-
-	function handleKeydown(event) {
-		if (event.keyCode === 73) suspendDoomScroll();
-	}
+	$: thirdOfWindowHeight = Math.round(windowHeight / 3);
 </script>
 
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
 
-<svelte:window on:keydown={handleKeydown}/>
+<svelte:window on:keydown={handleKeydown} bind:innerHeight={windowHeight} />
 
-<main bind:this={poemElement}>
+<main bind:this={poemElement} 
+	on:mousedown={suspendDoomScroll} on:touchstart={suspendDoomScroll} 
+	on:mouseup={doomScroll} on:touchend={doomScroll} 
+	style="--window-third: {thirdOfWindowHeight}px; --neg-window-third: -{thirdOfWindowHeight}px">
 	{#each verses as verse (verse.index)}
-		<div animate:flip={options} class="verse" on:mousedown={suspendDoomScroll} on:touchstart={suspendDoomScroll} 
-			on:mouseup={doomScroll} on:touchend={doomScroll}>
-			<Verse lineA={verse.a} lineB={verse.b} number={verse.number} />
+		<div animate:flip={options} class="verse">
+			<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} />
 		</div>
 	{/each}
 </main>
@@ -79,7 +88,7 @@
 	main {
 		margin: 0;
 		position: absolute;
-		bottom: 0;
+		bottom: var(--neg-window-third);
 		top: 0;
 		left: 0;
 		right: 0;
@@ -90,6 +99,9 @@
 		font-size: 14px;
 	}
 	.verse {
-    padding-bottom: 10px;
+		min-height: var(--window-third);
+		display: flex;
+		justify-content: center;
+		align-items: center;
   }
 </style>
