@@ -1,12 +1,11 @@
 <script>
-	// import { onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
 
 	import amIWhatIam from './data/amIWhatIAm.js';
 	import piCountdown from './data/piCointdown.js';
 	
 	import Verse from './Verse.svelte';
-	import Inkwell from './Inkwell.svelte';
 
 	export let title;
 
@@ -16,7 +15,7 @@
 	let verseIndex = 0, poemLength = amIWhatIam.length;
 
 	let firstVerseObj = { ...amIWhatIam[verseIndex], index: verseIndex };
-	let verses = [];
+	let verses = [firstVerseObj];
 
 	let poemElement, doomScrollInterval;
 
@@ -60,6 +59,10 @@
 		if (event.keyCode === 73) suspendDoomScroll();
 	};
 
+	onMount(async () => {
+		doomScroll();
+	});
+
 	$: thirdOfWindowHeight = Math.round(windowHeight / 3);
 </script>
 
@@ -69,13 +72,15 @@
 
 <svelte:window on:keydown={handleKeydown} bind:innerHeight={windowHeight} />
 
-<main bind:this={poemElement} >
+<main bind:this={poemElement} 
+	on:mousedown={suspendDoomScroll} on:touchstart={suspendDoomScroll} 
+	on:mouseup={doomScroll} on:touchend={doomScroll} 
+	style="--window-third: {thirdOfWindowHeight}px; --neg-window-third: -{thirdOfWindowHeight}px">
 	{#each verses as verse (verse.index)}
 		<div animate:flip={options} class="verse">
 			<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} />
 		</div>
 	{/each}
-	<Inkwell lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
 </main>
 
 
@@ -83,7 +88,7 @@
 	main {
 		margin: 0;
 		position: absolute;
-		bottom: 0;
+		bottom: var(--neg-window-third);
 		top: 0;
 		left: 0;
 		right: 0;
@@ -94,6 +99,7 @@
 		font-size: 14px;
 	}
 	.verse {
+		min-height: var(--window-third);
 		display: flex;
 		justify-content: center;
 		align-items: center;
