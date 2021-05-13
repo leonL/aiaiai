@@ -28,8 +28,6 @@ import Verse from './Verse.svelte';
     width: 220px;
     height: 220px;
     margin: 0 auto;
-    background: black;
-    color: white;
     text-align: center;
     font-size: 200px;
     line-height: 88%;

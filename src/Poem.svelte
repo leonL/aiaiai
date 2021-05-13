@@ -70,12 +70,12 @@
 <svelte:window on:keydown={handleKeydown} bind:innerHeight={windowHeight} />
 
 <main bind:this={poemElement} >
-	{#each verses as verse (verse.index)}
+	<Verse lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
+	<!-- {#each verses as verse (verse.index)}
 	<div animate:flip={options} class="verse">
-		<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} />
 	</div>
 	{/each}
-	<Letter lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
+	<Letter lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} /> -->
 </main>
 
 
@@ -93,9 +93,9 @@
 		text-align: center;
 		font-size: 14px;
 	}
-	.verse {
+	/* .verse {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-  }
+  } */
 </style>
