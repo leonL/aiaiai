@@ -6,7 +6,7 @@ import Verse from './Verse.svelte';
   export let lineB;
   export let piId;
 
-  let concatenatedCouplet = lineA + "......." + lineB,
+  let concatenatedCouplet = 'y k y k yk y kyk yyk ky' + lineA + " k y ky k yk yk yk ky ky" + lineB,
     verseWords = concatenatedCouplet.split(''),
     currentWordIndex = 0;
 
@@ -18,20 +18,21 @@ import Verse from './Verse.svelte';
 	});
 </script>
 
-<div class='inkwell' {piId}>
-  <span class='word'>{verseWords[currentWordIndex]}</span>
+<div class='letter' {piId}>
+  {verseWords[currentWordIndex]}
 </div>
 
 <style>
-  .inkwell {
-    display: flex;
-		justify-content: center;
-		align-items: center;
-    height: 100%;
-  }
-  
-  .word {
+  .letter {
+    border-radius: 50%;
+    width: 220px;
+    height: 220px;
+    margin: 0 auto;
+    background: black;
+    color: white;
+    text-align: center;
+    font-size: 200px;
+    line-height: 88%;
     font-family: 'Times New Roman', Times, serif;
-    font-size: 30em;
   }
 </style>

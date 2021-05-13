@@ -6,7 +6,7 @@
 	import piCountdown from './data/piCointdown.js';
 	
 	import Verse from './Verse.svelte';
-	import Inkwell from './Inkwell.svelte';
+	import Letter from './Letter.svelte';
 
 	export let title;
 
@@ -71,11 +71,11 @@
 
 <main bind:this={poemElement} >
 	{#each verses as verse (verse.index)}
-		<div animate:flip={options} class="verse">
-			<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} />
-		</div>
+	<div animate:flip={options} class="verse">
+		<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} />
+	</div>
 	{/each}
-	<Inkwell lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
+	<Letter lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
 </main>
 
 
