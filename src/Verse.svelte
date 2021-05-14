@@ -30,23 +30,31 @@
 	});
 </script>
 
-<div class='couplet' {piId}>
-  {#if false}
-  <div class='line-a'>
-    <span class='headless'>{progLineA.substr(0, progLineA.length - 1)}</span>
-    <div class='ultimate-char'>{progLineA.substr(progLineA.length - 1, 1)}</div>
+<div class='verse' {piId}>
+  <div class='couplet'>
+    {#if false}
+    <div class='line-a'>
+      <span class='headless'>{progLineA.substr(0, progLineA.length - 1)}</span>
+      <div class='ultimate char'>{progLineA.substr(progLineA.length - 1, 1)}</div>
+    </div>
+    {/if}
   </div>
-  {:else}
+  <div class='emanation'>
     <Fullstop />
-  {/if}
+  </div>
 </div>
 
 <style>
-  .couplet {
+  .verse {
     font-family: 'Times New Roman', Times, serif;
     font-size: 1.2em;
   }
-  .ultimate-char {
+
+  .emanation {
+    border: 0px;
+  }
+  .char {
+    font-family: sans-serif;
     font-size: 200px;
     height: 250px;
   }
