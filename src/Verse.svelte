@@ -1,6 +1,9 @@
 <script>
   import { onMount } from 'svelte';
+  import { tweened } from 'svelte/motion';
   import { flip } from 'svelte/animate';
+
+  import Fullstop from './Fullstop.svelte';
 
 	export let lineA;
   export let lineB;
@@ -11,7 +14,10 @@
 
   let progLineA = "";
 
+  const fullStopRadius = tweened(0, {duration: 10000});
+
   onMount(async () => {
+    fullStopRadius.set(100);
     let lineProgressInterval = setInterval(() => {
 			let lineLength = progLineA.length;
       if (lineLength < lineA.length) {
@@ -25,10 +31,14 @@
 </script>
 
 <div class='couplet' {piId}>
+  {#if false}
   <div class='line-a'>
     <span class='headless'>{progLineA.substr(0, progLineA.length - 1)}</span>
     <div class='ultimate-char'>{progLineA.substr(progLineA.length - 1, 1)}</div>
   </div>
+  {:else}
+    <Fullstop />
+  {/if}
 </div>
 
 <style>
