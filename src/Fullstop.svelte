@@ -1,12 +1,13 @@
 <script>
   import { tweened } from 'svelte/motion';
-  import { onMount } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
 
   const fillPercentStore = tweened(100, {duration: 2000}),
-    radiusStore = tweened(0.5, {delay: 5000, duration: 3000}),
-    radiusMax = 5, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4;
+    radiusStore = tweened(0.5, {delay: 500, duration: 3000}),
+    radiusMax = 5, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
+    dispatch = createEventDispatcher();
 
-  let doubleR, circumfrence, leaderCountdownComplete = false;
+  let doubleR, circumfrence;
   
   $: {
     doubleR = $radiusStore * 2;
@@ -16,16 +17,14 @@
   onMount(async () => {
     radiusStore.set(radiusMax)
       .then(_ => { 
-        leaderCountdownComplete = true;
-        fillPercentStore.set(0);
+        dispatch('expansionComplete', true);
+        fillPercentStore.set(0)
+          .then(_ => dispatch('wipeComplete', true))
       });
 	});
 
 </script>
 
-{#if leaderCountdownComplete}
-<span class='char'>3</span>
-{/if}
 <div class="fullstop">
   <svg width={quadrupleRadMax} height={quadrupleRadMax} viewBox="0 0 {quadrupleRadMax} {quadrupleRadMax}">
     <circle r={$radiusStore} cx={doubleRadMax} cy={doubleRadMax} fill="transparent" 
@@ -46,12 +45,6 @@
 svg {
   width: 200px;
   height: 200px;
-}
-.char {
-  font-family: sans-serif;
-  font-size: 200px;
-  height: 250px;
-  color: black;
 }
 
 </style>

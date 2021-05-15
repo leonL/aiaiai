@@ -1,7 +1,8 @@
 <script>
   import { onMount } from 'svelte';
-  import { tweened } from 'svelte/motion';
-  import { flip } from 'svelte/animate';
+  import { crossfade } from 'svelte/transition';
+
+  const [send, receive] = crossfade({duration: 1500, delay: 500});
 
   import Fullstop from './Fullstop.svelte';
 
@@ -12,12 +13,9 @@
   const aChars = lineA.split(''),
     bChars = lineB.split('');
 
-  let progLineA = "";
-
-  const fullStopRadius = tweened(0, {duration: 10000});
+  let progLineA = "", wipeCompleted = false, expansionCompleted = false;
 
   onMount(async () => {
-    fullStopRadius.set(100);
     let lineProgressInterval = setInterval(() => {
 			let lineLength = progLineA.length;
       if (lineLength < lineA.length) {
@@ -30,7 +28,10 @@
 	});
 </script>
 
-<div class='verse' {piId}>
+<div class='verse'>
+  {#if wipeCompleted}
+  <div class='piCountdown' in:receive={{key: piId}}>{piId}</div>
+  {/if}
   <div class='couplet'>
     {#if false}
     <div class='line-a'>
@@ -40,7 +41,11 @@
     {/if}
   </div>
   <div class='emanation'>
-    <Fullstop />
+    {#if expansionCompleted && !wipeCompleted}
+      <span class='char' out:send={{key: piId}}>{piId}</span>
+    {/if}
+    <Fullstop on:expansionComplete = { () => expansionCompleted = true } 
+      on:wipeComplete = { () => wipeCompleted = true } />
   </div>
 </div>
 
@@ -51,11 +56,16 @@
   }
 
   .emanation {
-    border: 0px;
+    height: 200px;
   }
   .char {
     font-family: sans-serif;
     font-size: 200px;
     height: 250px;
+    color: black;
+  }
+
+  .piCountdown {
+    font-family: sans-serif;
   }
 </style>
