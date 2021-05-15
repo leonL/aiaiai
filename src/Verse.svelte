@@ -2,7 +2,7 @@
   import { onMount } from 'svelte';
   import { crossfade } from 'svelte/transition';
 
-  const [send, receive] = crossfade({duration: 1500, delay: 500});
+  const [send, receive] = crossfade({duration: 300, delay: 500});
 
   import Fullstop from './Fullstop.svelte';
 
