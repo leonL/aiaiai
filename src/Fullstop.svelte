@@ -39,13 +39,10 @@
 
 <style>
 .fullstop {
-  position: absolute;
-  width: 100%;
-  bottom: 0px;
+  height: 200px;
 }
 svg {
   width: 200px;
   height: 200px;
 }
-
 </style>
