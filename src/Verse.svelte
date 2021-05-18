@@ -1,32 +1,50 @@
 <script>
 import { onMount } from 'svelte';
 import { crossfade } from 'svelte/transition';
-
-const [send, receive] = crossfade({duration: 100, delay: 500});
-
 import Fullstop from './Fullstop.svelte';
 
 export let lineA;
 export let lineB;
 export let piId;
 
-const lines = lineA + " " + lineB,
-  chars = lines.split(''); 
+const aWords = lineA.split(' '),
+  bWords = lineB.split(' '),
+  oneLine = lineA + ' ' + lineB,
+  words = oneLine.split(' ');
 
-let progLine = "", wipeCompleted = false, expansionCompleted = false;
+let wipeCompleted = false, expansionCompleted = false, writeOn = true, 
+  wordIndex = 0, wordEl, wordFontSize = 150, wordColour = 'black', emanationBlockWidth;
 
-$: showFullStop =  !wipeCompleted || !expansionCompleted; 
+$: showFullStop =  !wipeCompleted || !expansionCompleted
+$: currentWord = words[wordIndex];
+  
+const [send, receive] = crossfade({duration: 2500, delay: 100});
 
 function startWriting() {
-  let lineProgressInterval = setInterval(() => {
-    let lineLength = progLine.length;
-    if (lineLength < lines.length) {
-      progLine = progLine + chars[progLine.length];
+  writeOn = true;
+  let nextWordInterval = setInterval(() => {
+    if (wordIndex < words.length - 1) {
+      fontSizeFitting(); // this has to wait for a promise 
+      wordColour = 'white';
+      wordFontSize = 150;
+      wordIndex++;
     } else {
-      progLine = progLine + ' ';
-      clearInterval(lineProgressInterval);
-    };
-  }, 150);
+      writeOn = false;
+      wordIndex++;
+      clearInterval(nextWordInterval);
+    }
+  }, 750);
+}; 
+
+function fontSizeFitting() {
+  let fontSizeFittingInterval = setInterval(() => {
+    if (wordEl.scrollWidth > emanationBlockWidth) {
+      wordFontSize--;
+    } else {
+      wordColour = 'black';
+      clearInterval(fontSizeFittingInterval);
+    }
+  }, 0);
 };
 
 </script>
@@ -38,20 +56,30 @@ function startWriting() {
     {/if}
   </div>
   <div class='couplet'>
-    <!-- <div class='line-a'>{progLine.substr(0, progLine.length - 1)}</div> -->
-    <div class='line-a'>{lineA}</div>
-    <div class='line-b'>{lineB}</div>
+    <div class='line-a'>
+      {#each aWords as word, i}
+        <span style="color: {wordIndex > i ? 'black' : 'white'}">{word} </span>
+      {/each}
+    </div>
+    <div class='line-b'>
+      {#each bWords as word, i}
+        <span style="color: {wordIndex > (i + aWords.length) ? 'black' : 'white'}">{word} </span>
+      {/each}
+    </div>
   </div>
 </div>
-<div class='emanation'>
+<div class='emanation' bind:clientWidth={emanationBlockWidth}>
   {#if showFullStop }
     <Fullstop on:expansionComplete = { () => expansionCompleted = true } 
       on:wipeComplete = { () => wipeCompleted = true } />
     {#if expansionCompleted && !wipeCompleted }
       <span class='piCount' out:send={{key: piId}}>{piId}</span>
     {/if}
+  {:else if writeOn} 
+    <span class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour};">
+      {currentWord}
+    </span>
   {/if}
-  <span class='letter'>{progLine.substr(progLine.length - 1, 1)}</span>
 </div>
 
 <style>
@@ -90,11 +118,14 @@ function startWriting() {
     font-family: 'Heebo', sans-serif;
     font-size: 150px;
   }
-  .letter {
+  .word {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    text-align: center;
     font-family: 'Times New Roman', Times, serif;
-    position: absolute;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
+    overflow: hidden;
   }
 </style>
