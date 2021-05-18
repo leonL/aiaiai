@@ -2,7 +2,7 @@
 import { onMount } from 'svelte';
 import { crossfade } from 'svelte/transition';
 
-const [send, receive] = crossfade({duration: 300, delay: 500});
+const [send, receive] = crossfade({duration: 100, delay: 500});
 
 import Fullstop from './Fullstop.svelte';
 
@@ -26,20 +26,22 @@ function startWriting() {
       progLine = progLine + ' ';
       clearInterval(lineProgressInterval);
     };
-  }, 500);
+  }, 150);
 };
 
 </script>
 
 <div class='verse'>
-  <span class='number'>
+  <div class='number'>
     {#if wipeCompleted}
       <span in:receive={{key: piId}} on:introend={ startWriting }>{piId}</span>
     {/if}
-  </span>
-  <span class='couplet'>
-    <div class='line-a'>{progLine.substr(0, progLine.length - 1)}</div>
-  </span>
+  </div>
+  <div class='couplet'>
+    <!-- <div class='line-a'>{progLine.substr(0, progLine.length - 1)}</div> -->
+    <div class='line-a'>{lineA}</div>
+    <div class='line-b'>{lineB}</div>
+  </div>
 </div>
 <div class='emanation'>
   {#if showFullStop }
@@ -54,22 +56,26 @@ function startWriting() {
 
 <style>
   .verse {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 1em;
-    margin: 0 10px;
-    text-align: right;
+    margin: 10px 5px;
     display: flex;
     flex-direction: row;
-    justify-content: flex-end;
   }
   .number {
-    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     text-align: center;
-    flex-grow: 1;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    padding-left: 5px;
   }
   .couplet {
+    font-family: 'EB Garamond', serif;
+    font-size: 16px;
     text-align: right;
     flex-grow: 1;
+    padding-right: 5px;
   }
   .emanation {
     height: 200px;
@@ -81,7 +87,8 @@ function startWriting() {
     bottom: 0px;
     left: 0px;
     right: 0px;
-    font-family: sans-serif;
+    font-family: 'Heebo', sans-serif;
+    font-size: 150px;
   }
   .letter {
     font-family: 'Times New Roman', Times, serif;
