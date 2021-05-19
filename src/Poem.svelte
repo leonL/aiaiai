@@ -92,10 +92,6 @@
 		flex-direction: column;
 		text-align: center;
 		font-size: 14px;
+		font-family: 'EB Garamond', serif;
 	}
-	/* .verse {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-  } */
 </style>

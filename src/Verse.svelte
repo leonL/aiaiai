@@ -5,6 +5,8 @@ export let lineA;
 export let lineB;
 export let piId;
 
+let localCountdownIndex = 3;
+
 const aWords = lineA.split(' '),
   bWords = lineB.split(' '),
   oneLine = lineA + ' ' + lineB,
@@ -53,22 +55,22 @@ function setFontSize() {
 };
 
 </script>
-
+{#if localCountdownIndex % 3 === 0}
+  <span class='period'>.</span>
+{/if}
 <div class='verse'>
   <div class='number'>
-    {#if wipeCompleted}
-      <span>{piId}</span>
-    {/if}
+    <span style="color: {expansionCompleted ? 'black' : 'white'}">{piId}</span>
   </div>
   <div class='couplet'>
     <div class='line-a'>
       {#each aWords as word, i}
-        <span style="color: {wordIndex > i ? 'black' : 'white'}">{word} </span>
+        <span style="color: {wordIndex >= i ? 'black' : 'white'}">{word} </span>
       {/each}
     </div>
     <div class='line-b'>
       {#each bWords as word, i}
-        <span style="color: {wordIndex > (i + aWords.length) ? 'black' : 'white'}">{word} </span>
+        <span style="color: {wordIndex >= (i + aWords.length) ? 'black' : 'white'}">{word} </span>
       {/each}
     </div>
   </div>
@@ -89,7 +91,7 @@ function setFontSize() {
 
 <style>
   .verse {
-    margin: 10px 5px;
+    margin: 0 5px;
     display: flex;
     flex-direction: row;
   }
@@ -103,6 +105,13 @@ function setFontSize() {
     font-weight: 400;
     padding-left: 5px;
   }
+
+  .period {
+    margin: 0 5px;
+    text-align: left;
+    font-size: 30px;
+    padding-left: 5px;
+  }
   .couplet {
     font-family: 'EB Garamond', serif;
     font-size: 16px;
@@ -114,6 +123,7 @@ function setFontSize() {
     height: 200px;
     font-size: 200px;
     color: black;
+    border-top: 1px dashed black;
   }
   .piCount {
     position: absolute;
