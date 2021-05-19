@@ -1,5 +1,6 @@
 <script>
 import Fullstop from './Fullstop.svelte';
+import Letter from './Letter.svelte';
 
 export let lineA;
 export let lineB;
@@ -21,25 +22,46 @@ let wipeCompleted = false, expansionCompleted = false, writeOn = true,
 $: showFullStop =  !wipeCompleted || !expansionCompleted
 $: currentWord = (wordIndex >= 0) ? words[wordIndex] : "";
 
+let letterIndex = 0;
+
 async function startWriting() {
   let nextWordInterval = setInterval(async () => {
     if (wordIndex < words.length - 1) {
       wordIndex++;
       await setFontSize();
+      await emanateWordLetters();
     } else {
       writeOn = false;
       wordIndex++;
       clearInterval(nextWordInterval);
     }
-  }, 750);
+  }, 1500);
 }; 
+
+function emanateWordLetters() {
+  letterIndex = 0;
+  let wordLength = currentWord.length;
+  
+  const emanateLettersPromise = new Promise(resolve => {
+    let letterInterval = setInterval(() => {
+      if (letterIndex < wordLength) {
+        letterIndex++;
+      } else {
+        clearInterval(letterInterval);
+        resolve(true);
+      }
+    }, 100);
+  });
+  return emanateLettersPromise;
+};
 
 function setFontSize() {  
   wordColour = 'white';
   wordFontSize = wordFontSizeMax;
 
+  const innerWordElWidth = emanationBlockWidth - (wordElMargin * 2);
+  
   const sizePromise = new Promise(resolve => {
-    const innerWordElWidth = emanationBlockWidth - (wordElMargin * 2);
     let fontSizeFittingInterval = setInterval(() => {
       let scrollWidth = wordEl.scrollWidth;
       if (scrollWidth > innerWordElWidth) {
@@ -47,7 +69,7 @@ function setFontSize() {
       } else {
         wordColour = 'black';
         clearInterval(fontSizeFittingInterval);
-        resolve('fontSizeSet');
+        resolve(true);
       }
     }, 0);
   });
@@ -83,9 +105,11 @@ function setFontSize() {
       <span class='piCount'>{piId}</span>
     {/if}
   {:else if writeOn} 
-    <span class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour}; margin: 0 {wordElMargin}px;">
-      {currentWord}
-    </span>
+    <div class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour}; margin: 0 {wordElMargin}px;">
+      {#each currentWord as letter, i}
+        <span style="color: {letterIndex >= i ? 'black' : 'white'}">{letter}</span>
+      {/each}
+    </div>
   {/if}
 </div>
 
@@ -135,7 +159,7 @@ function setFontSize() {
   }
   .word {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     height: 100%;
     text-align: center;

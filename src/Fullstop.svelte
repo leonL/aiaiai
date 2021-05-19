@@ -3,7 +3,7 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import { expoOut } from 'svelte/easing';
 
-  const fillPercentStore = tweened(100, {duration: 2000}),
+  const fillPercentStore = tweened(100, {duration: 750}),
       radiusStore = tweened(0.5, {delay: 1500, duration: 3000, easing: expoOut}),
     radiusMax = 5, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher();
