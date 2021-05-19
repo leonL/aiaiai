@@ -1,6 +1,4 @@
 <script>
-import { onMount } from 'svelte';
-import { crossfade } from 'svelte/transition';
 import Fullstop from './Fullstop.svelte';
 
 export let lineA;
@@ -17,8 +15,6 @@ let wipeCompleted = false, expansionCompleted = false, writeOn = true,
 
 $: showFullStop =  !wipeCompleted || !expansionCompleted
 $: currentWord = words[wordIndex];
-  
-const [send, receive] = crossfade({duration: 2500, delay: 100});
 
 function startWriting() {
   writeOn = true;
@@ -52,7 +48,7 @@ function fontSizeFitting() {
 <div class='verse'>
   <div class='number'>
     {#if wipeCompleted}
-      <span in:receive={{key: piId}} on:introend={ startWriting }>{piId}</span>
+      <span>{piId}</span>
     {/if}
   </div>
   <div class='couplet'>
@@ -71,9 +67,9 @@ function fontSizeFitting() {
 <div class='emanation' bind:clientWidth={emanationBlockWidth}>
   {#if showFullStop }
     <Fullstop on:expansionComplete = { () => expansionCompleted = true } 
-      on:wipeComplete = { () => wipeCompleted = true } />
+      on:wipeComplete = { () => { wipeCompleted = true; startWriting() } } />
     {#if expansionCompleted && !wipeCompleted }
-      <span class='piCount' out:send={{key: piId}}>{piId}</span>
+      <span class='piCount'>{piId}</span>
     {/if}
   {:else if writeOn} 
     <span class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour};">
