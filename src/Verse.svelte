@@ -147,7 +147,6 @@ function setFontSize() {
     height: 200px;
     font-size: 200px;
     color: black;
-    border-top: 1px dashed black;
   }
   .piCount {
     position: absolute;
