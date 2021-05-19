@@ -10,20 +10,20 @@ const aWords = lineA.split(' '),
   oneLine = lineA + ' ' + lineB,
   words = oneLine.split(' ');
 
-let wipeCompleted = false, expansionCompleted = false, writeOn = true, 
-  wordIndex = 0, wordEl, wordFontSize = 150, wordColour = 'black', emanationBlockWidth;
+const wordFontSizeMax = 130;
+
+let wipeCompleted = false, expansionCompleted = false, writeOn = true,
+  wordIndex = -1, wordFontSize = wordFontSizeMax, emanationBlockWidth, 
+  wordEl, wordElMargin = 40, wordColour = 'white';
 
 $: showFullStop =  !wipeCompleted || !expansionCompleted
-$: currentWord = words[wordIndex];
+$: currentWord = (wordIndex >= 0) ? words[wordIndex] : "";
 
-function startWriting() {
-  writeOn = true;
-  let nextWordInterval = setInterval(() => {
+async function startWriting() {
+  let nextWordInterval = setInterval(async () => {
     if (wordIndex < words.length - 1) {
-      fontSizeFitting(); // this has to wait for a promise 
-      wordColour = 'white';
-      wordFontSize = 150;
       wordIndex++;
+      await setFontSize();
     } else {
       writeOn = false;
       wordIndex++;
@@ -32,15 +32,24 @@ function startWriting() {
   }, 750);
 }; 
 
-function fontSizeFitting() {
-  let fontSizeFittingInterval = setInterval(() => {
-    if (wordEl.scrollWidth > emanationBlockWidth) {
-      wordFontSize--;
-    } else {
-      wordColour = 'black';
-      clearInterval(fontSizeFittingInterval);
-    }
-  }, 0);
+function setFontSize() {  
+  wordColour = 'white';
+  wordFontSize = wordFontSizeMax;
+
+  const sizePromise = new Promise(resolve => {
+    const innerWordElWidth = emanationBlockWidth - (wordElMargin * 2);
+    let fontSizeFittingInterval = setInterval(() => {
+      let scrollWidth = wordEl.scrollWidth;
+      if (scrollWidth > innerWordElWidth) {
+        wordFontSize--;
+      } else {
+        wordColour = 'black';
+        clearInterval(fontSizeFittingInterval);
+        resolve('fontSizeSet');
+      }
+    }, 0);
+  });
+  return sizePromise;
 };
 
 </script>
@@ -72,7 +81,7 @@ function fontSizeFitting() {
       <span class='piCount'>{piId}</span>
     {/if}
   {:else if writeOn} 
-    <span class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour};">
+    <span class='word' bind:this={wordEl} style="font-size: {`${wordFontSize}px`}; color: {wordColour}; margin: 0 {wordElMargin}px;">
       {currentWord}
     </span>
   {/if}
@@ -119,9 +128,8 @@ function fontSizeFitting() {
     flex-direction: column;
     justify-content: center;
     height: 100%;
-    width: 100%;
     text-align: center;
-    font-family: 'Times New Roman', Times, serif;
+    font-family: 'EB Garamond', serif;
     overflow: hidden;
   }
 </style>
