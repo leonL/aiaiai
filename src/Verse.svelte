@@ -13,7 +13,7 @@ const aWords = lineA.split(' '),
   oneLine = lineA + ' ' + lineB,
   words = oneLine.split(' ');
 
-const wordFontSizeMax = 130;
+const wordFontSizeMax = 100;
 
 let wipeCompleted = false, expansionCompleted = false, writeOn = true,
   wordIndex = -1, wordFontSize = wordFontSizeMax, emanationBlockWidth, 
@@ -35,7 +35,7 @@ async function startWriting() {
       wordIndex++;
       clearInterval(nextWordInterval);
     }
-  }, 1500);
+  }, 3000);
 }; 
 
 function emanateWordLetters() {
@@ -50,7 +50,7 @@ function emanateWordLetters() {
         clearInterval(letterInterval);
         resolve(true);
       }
-    }, 100);
+    }, 250);
   });
   return emanateLettersPromise;
 };
@@ -82,7 +82,7 @@ function setFontSize() {
 {/if}
 <div class='verse'>
   <div class='number'>
-    <span style="color: {expansionCompleted ? 'black' : 'white'}">{piId}</span>
+    <span style="color: {wipeCompleted ? 'black' : 'white'}">{piId}</span>
   </div>
   <div class='couplet'>
     <div class='line-a'>
