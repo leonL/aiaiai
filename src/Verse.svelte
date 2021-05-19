@@ -47,6 +47,7 @@ function emanateWordLetters() {
       if (letterIndex < wordLength) {
         letterIndex++;
       } else {
+        letterIndex = - 1;
         clearInterval(letterInterval);
         resolve(true);
       }
