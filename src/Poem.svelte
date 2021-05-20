@@ -1,83 +1,25 @@
 <script>
-	// import { onMount } from 'svelte';
-	import { flip } from 'svelte/animate';
-
 	import amIWhatIam from './data/amIWhatIAm.js';
-	import piCountdown from './data/piCointdown.js';
-	
 	import Verse from './Verse.svelte';
-	import Letter from './Letter.svelte';
 
 	export let title;
 
-	let windowHeight;
-
-	let countdown = piCountdown, countdownLength = countdown.length;
-	let verseIndex = 0, poemLength = amIWhatIam.length;
-
-	let firstVerseObj = { ...amIWhatIam[verseIndex], index: verseIndex };
-	let verses = [];
-
-	let poemElement, doomScrollInterval;
-
-	function addVerse() {
-		let nextVerse, nextCountdownIndex = ++verseIndex % countdownLength
-
-		if (nextCountdownIndex < poemLength) {
-			nextVerse = amIWhatIam[nextCountdownIndex];
-		} else {
-			let nextVersePid = countdown[nextCountdownIndex];
-			nextVerse = amIWhatIam.filter(v => v.piId === nextVersePid)[0];
-		}
-		let nextVesrseObj = { ...nextVerse, index: verseIndex}
-		let nextVerseSet = [...verses, nextVesrseObj];
-
-		let firstVerseEl = poemElement.querySelector(".verse"),
-			elBottomPosition = firstVerseEl.getBoundingClientRect().bottom;	
-
-		if (elBottomPosition < 0) nextVerseSet.shift();
-
-		verses = nextVerseSet;
-		doomScroll();
-		return true;
-	}
+	let verseCount = amIWhatIam.length;
+	let ultimateActiveVerseIndex = 1; 
 	
-	const options = { duration: 500 };
-
-	$: duration = ((verseIndex + 1) % 3 === 0) ? 5000 : 1000;
-
-	function doomScroll() {
-		doomScrollInterval = setTimeout(() => {
-			addVerse(); 
-		}, duration);
-	};
-
-	function suspendDoomScroll() {
-		clearTimeout(doomScrollInterval);
-	};
-
-	function handleKeydown(event) {
-		if (event.keyCode === 73) suspendDoomScroll();
-	};
-
-	$: thirdOfWindowHeight = Math.round(windowHeight / 3);
+	$: activeVerses = amIWhatIam.slice(0, ultimateActiveVerseIndex);
 </script>
 
 <svelte:head>
   <title>{title}</title>
 </svelte:head>
 
-<svelte:window on:keydown={handleKeydown} bind:innerHeight={windowHeight} />
-
-<main bind:this={poemElement} >
-	<Verse lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} />
-	<!-- {#each verses as verse (verse.index)}
-	<div animate:flip={options} class="verse">
-	</div>
+<main>
+	{#each activeVerses as verse, i}
+		<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} verseIndex={i}
+			on:verseComplete = { () => { if (ultimateActiveVerseIndex < verseCount) ultimateActiveVerseIndex++ }} />
 	{/each}
-	<Letter lineA={firstVerseObj.a} lineB={firstVerseObj.b} piId={firstVerseObj.piId} /> -->
 </main>
-
 
 <style>
 	main {

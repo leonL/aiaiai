@@ -1,13 +1,12 @@
 <script>
   import { tick } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import Fullstop from './Fullstop.svelte';
-  import Letter from './Letter.svelte';
 
   export let lineA;
   export let lineB;
   export let piId;
-
-  let localCountdownIndex = 3;
+  export let verseIndex;
 
   const aWords = lineA.split(' '),
     bWords = lineB.split(' '),
@@ -15,6 +14,8 @@
     words = oneLine.split(' ');
 
   const wordFontSizeMax = 100;
+
+  const dispatch = createEventDispatcher();
 
   let wipeCompleted = false, expansionCompleted = false, writeOn = true,
     wordIndex = -1, wordFontSize = wordFontSizeMax, emanationBlockWidth, 
@@ -25,6 +26,8 @@
 
   let letterIndex = 0;
 
+  let showEmanation = true;
+
   async function startWriting() {
     while (wordIndex < words.length - 1) {
       wordIndex++;
@@ -34,6 +37,8 @@
     }
     writeOn = false;
     wordIndex++;
+    showEmanation = false;
+    dispatch('verseComplete', true);
   }; 
 
   function emanateWordLetters() {
@@ -49,7 +54,7 @@
           clearInterval(letterInterval);
           resolve(true);
         };
-      }, 200);
+      }, 100);
     });
     return emanateLettersPromise;
   };
@@ -76,7 +81,7 @@
   };
 </script>
 
-{#if localCountdownIndex % 3 === 0}
+{#if verseIndex % 3 === 0}
   <span class='period'>.</span>
 {/if}
 <div class='verse'>
@@ -96,6 +101,7 @@
     </div>
   </div>
 </div>
+{#if showEmanation}
 <div class='emanation' bind:clientWidth={emanationBlockWidth}>
   {#if showFullStop }
     <Fullstop on:expansionComplete = { () => expansionCompleted = true } 
@@ -111,6 +117,7 @@
     </div>
   {/if}
 </div>
+{/if}
 
 <style>
   .verse {
