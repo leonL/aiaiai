@@ -1,6 +1,6 @@
 <script>
 	import amIWhatIam from './data/amIWhatIAm.js';
-	import Reverse from './Reverse.svelte';
+	import Couplet from './Couplet.svelte';
 
 	export let title;
 
@@ -16,8 +16,7 @@
 
 <main id='aiwia'>
 	{#each activeVerses as verse, i}
-		<Reverse aLine={verse.a} bLine={verse.b} piId={verse.piId} verseIndex={i}
-			on:verseComplete = { () => { if (ultimateActiveVerseIndex < verseCount) ultimateActiveVerseIndex++ }} />
+		<Couplet aLine={verse.a} bLine={verse.b} piId={verse.piId} coupletIndex={i} />
 	{/each}
 	<!-- {#each activeVerses as verse, i}
 		<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} verseIndex={i}
