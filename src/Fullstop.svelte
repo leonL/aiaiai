@@ -1,10 +1,10 @@
 <script>
   import { tweened } from 'svelte/motion';
   import { onMount, createEventDispatcher } from 'svelte';
-  import { backIn } from 'svelte/easing';
+  import { expoOut } from 'svelte/easing';
 
-  const fillPercentStore = tweened(100, {delay: 1000, duration: 1000}),
-      radiusStore = tweened(0.5, {delay: 1500, duration: 5000, easing: backIn}),
+  const fillPercentStore = tweened(100, {duration: 750}),
+      radiusStore = tweened(0.5, {delay: 1500, duration: 3000, easing: expoOut}),
     radiusMax = 5, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
