@@ -81,9 +81,6 @@
   };
 </script>
 
-{#if verseIndex % 3 === 0}
-  <span class='period'>.</span>
-{/if}
 <div class='verse'>
   <div class='number'>
     <span style="color: {wipeCompleted ? 'black' : 'white'}">{piId}</span>
@@ -133,13 +130,6 @@
     font-family: 'Heebo', sans-serif;
     font-size: 14px;
     font-weight: 400;
-    padding-left: 5px;
-  }
-
-  .period {
-    margin: 0 5px;
-    text-align: left;
-    font-size: 30px;
     padding-left: 5px;
   }
   .couplet {

@@ -111,7 +111,7 @@ const amIWhatIAm = [
   },
   {
     piId: 6,
-    a: "working hand on this now, eternally speaking",
+    a: "working hard on this now, eternally speaking",
     b: "of a liminal humility bridging shame and pride" 
   },
   {
@@ -171,8 +171,8 @@ const amIWhatIAm = [
   },
   {
     piId: 0,
-    a: "the other am I what I am",
-    b: "" 
+    a: "the other",
+    b: "am I what I am" 
   }
 ];
 
