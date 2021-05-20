@@ -11,7 +11,7 @@ const amIWhatIAm = [
   },
   {
     piId: 1,
-    a: "the other white people, a new Isrealite vector",
+    a: "the other white people, a new Israelite vector",
     b: "starting from the horrible reach of her desperate touch" 
   },
   {
