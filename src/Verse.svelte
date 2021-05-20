@@ -1,83 +1,81 @@
 <script>
-import Fullstop from './Fullstop.svelte';
-import Letter from './Letter.svelte';
+  import { tick } from 'svelte';
+  import Fullstop from './Fullstop.svelte';
+  import Letter from './Letter.svelte';
 
-export let lineA;
-export let lineB;
-export let piId;
+  export let lineA;
+  export let lineB;
+  export let piId;
 
-let localCountdownIndex = 3;
+  let localCountdownIndex = 3;
 
-const aWords = lineA.split(' '),
-  bWords = lineB.split(' '),
-  oneLine = lineA + ' ' + lineB,
-  words = oneLine.split(' ');
+  const aWords = lineA.split(' '),
+    bWords = lineB.split(' '),
+    oneLine = lineA + ' ' + lineB,
+    words = oneLine.split(' ');
 
-const wordFontSizeMax = 100;
+  const wordFontSizeMax = 100;
 
-let wipeCompleted = false, expansionCompleted = false, writeOn = true,
-  wordIndex = -1, wordFontSize = wordFontSizeMax, emanationBlockWidth, 
-  wordEl, wordElMargin = 40, wordColour = 'white';
+  let wipeCompleted = false, expansionCompleted = false, writeOn = true,
+    wordIndex = -1, wordFontSize = wordFontSizeMax, emanationBlockWidth, 
+    wordEl, wordElMargin = 40, wordColour = 'white';
 
-$: showFullStop =  !wipeCompleted || !expansionCompleted
-$: currentWord = (wordIndex >= 0) ? words[wordIndex] : "";
+  $: showFullStop =  !wipeCompleted || !expansionCompleted
+  $: currentWord = (wordIndex >= 0) ? words[wordIndex] : "";
 
-let letterIndex = 0;
+  let letterIndex = 0;
 
-async function startWriting() {
-  let nextWordInterval = setInterval(async () => {
-    if (wordIndex < words.length - 1) {
+  async function startWriting() {
+    while (wordIndex < words.length - 1) {
       wordIndex++;
+      await tick();
       await setFontSize();
       await emanateWordLetters();
-    } else {
-      writeOn = false;
-      wordIndex++;
-      clearInterval(nextWordInterval);
     }
-  }, 3000);
-}; 
+    writeOn = false;
+    wordIndex++;
+  }; 
 
-function emanateWordLetters() {
-  letterIndex = 0;
-  let wordLength = currentWord.length;
-  
-  const emanateLettersPromise = new Promise(resolve => {
-    let letterInterval = setInterval(() => {
-      if (letterIndex < wordLength) {
-        letterIndex++;
-      } else {
-        letterIndex = - 1;
-        clearInterval(letterInterval);
-        resolve(true);
-      }
-    }, 250);
-  });
-  return emanateLettersPromise;
-};
+  function emanateWordLetters() {
+    letterIndex = 0;
+    let wordLength = currentWord.length;
+    
+    const emanateLettersPromise = new Promise(resolve => {
+      let letterInterval = setInterval(() => {
+        if (letterIndex < wordLength) {
+          letterIndex++;
+        } else {
+          letterIndex = - 1;
+          clearInterval(letterInterval);
+          resolve(true);
+        };
+      }, 200);
+    });
+    return emanateLettersPromise;
+  };
 
-function setFontSize() {  
-  wordColour = 'white';
-  wordFontSize = wordFontSizeMax;
+  function setFontSize() {  
+    wordColour = 'white';
+    wordFontSize = wordFontSizeMax;
 
-  const innerWordElWidth = emanationBlockWidth - (wordElMargin * 2);
-  
-  const sizePromise = new Promise(resolve => {
-    let fontSizeFittingInterval = setInterval(() => {
-      let scrollWidth = wordEl.scrollWidth;
-      if (scrollWidth > innerWordElWidth) {
-        wordFontSize--;
-      } else {
-        wordColour = 'black';
-        clearInterval(fontSizeFittingInterval);
-        resolve(true);
-      }
-    }, 0);
-  });
-  return sizePromise;
-};
-
+    const innerWordElWidth = emanationBlockWidth - (wordElMargin * 2);
+    
+    const sizePromise = new Promise(resolve => {
+      let fontSizeFittingInterval = setInterval(() => {
+        let scrollWidth = wordEl.scrollWidth;
+        if (scrollWidth > innerWordElWidth) {
+          wordFontSize--;
+        } else {
+          wordColour = 'black';
+          clearInterval(fontSizeFittingInterval);
+          resolve(true);
+        }
+      }, 0);
+    });
+    return sizePromise;
+  };
 </script>
+
 {#if localCountdownIndex % 3 === 0}
   <span class='period'>.</span>
 {/if}
