@@ -14,7 +14,7 @@
   allWords = [...aLineWords, ...bLineWords],
   allWordsCount = allWords.length;
   
-  let wordIndex = 0, letterIndex = 0;
+  let wordIndex = 0, letterIndex = 0, showEmanationMagnifier = false;
   
   const dispatch = createEventDispatcher();
   
@@ -26,10 +26,12 @@
   });
 
   async function emanateWords() {
+    showEmanationMagnifier = true;
     while (wordIndex < allWordsCount) {
       await emanateLetters();
       wordIndex++;
     }
+    showEmanationMagnifier = false;
     dispatch('coupletEmenated', true);
     return true;
   };
@@ -70,7 +72,7 @@
       {/each}
     </div>
   </div>
-  {#if currentWord}
+  {#if showEmanationMagnifier}
     <div class='emanation'>
       <span class='letters'>
         {#each currentWord as letter, i}
