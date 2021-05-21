@@ -40,7 +40,7 @@
           clearInterval(letterInterval);
           resolve(true);
         };
-      }, 50);
+      }, 200);
     });
     return emanateLettersPromise;
   };

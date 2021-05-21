@@ -1,6 +1,6 @@
 <script>
   import { tweened } from 'svelte/motion';
-  import { onMount, createEventDispatcher, tick } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import { expoOut } from 'svelte/easing';
 
   export let piSlice;
@@ -8,8 +8,8 @@
 
   let showPiSliceVal = false;
 
-  const fillPercentStore = tweened(100, {duration: 750}),
-      radiusStore = tweened(0.5, {delay: 1500, duration: 3000, easing: expoOut}),
+  const fillPercentStore = tweened(100, {duration: 1500}),
+      radiusStore = tweened(2, {delay: 1500, duration: 3000, easing: expoOut}),
     doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
@@ -24,7 +24,7 @@
     await radiusStore.set(radiusMax);
     showPiSliceVal = true;
     await fillPercentStore.set(0);
-    dispatch('countdownComplete', true);
+    dispatch('countdownComplete', true)
 	});
 
 </script>
