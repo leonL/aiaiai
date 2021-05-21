@@ -1,10 +1,13 @@
 <script>
   import { onMount, tick } from 'svelte';
+  import CountdownLeader from './CountdownLeader.svelte'; 
   
   export let aLine;
   export let bLine;
-  export let piId;
+  export let piSlice;
   export let coupletIndex;
+
+  let showCountdown = false, distichHeight;
 
   const aLineWords = aLine.split(' '), bLineWords = bLine.split(' '),
     allWords = [...aLineWords, ...bLineWords],
@@ -15,13 +18,16 @@
   $: currentWord = (wordIndex < allWordsCount) ? allWords[wordIndex] : false;
   $: wordLength = currentWord.length;
 
-  onMount(async () => {
+  onMount(async () => {    
+    showCountdown = true;
+  });
+
+  async function emanateWords() {
     while (wordIndex < allWordsCount) {
       await emanateLetters();
       wordIndex++;
-      await tick();
     }
-  });
+  };
 
   function emanateLetters() {
     letterIndex = 0;
@@ -34,32 +40,39 @@
           clearInterval(letterInterval);
           resolve(true);
         };
-      }, 500);
+      }, 50);
     });
     return emanateLettersPromise;
   };
-
 </script>
 
-<div class='couplet' {coupletIndex} {piId}>
-  <div class='line'>
-    {#each aLineWords as word, i}
-      <span style="color: {wordIndex >= i ? 'black' : 'white'}">{word} </span>
-    {/each}
-  </div>
-  <div class='line'>
-    {#each bLineWords as word, i}
-      <span style="color: {wordIndex >= (i + aLineWords.length) ? 'black' : 'white'}">{word} </span>
-    {/each}
+<div class='couplet' {coupletIndex} >
+  <div class='distich' bind:clientHeight={distichHeight}>
+    {#if showCountdown}
+      <div class='countdown-leader'>
+        <CountdownLeader radiusMax={distichHeight / 2} piSlice={piSlice} 
+          on:countdownComplete= { () => { showCountdown = false; emanateWords(); } } />
+      </div>
+    {/if}
+    <div class='line'>
+      {#each aLineWords as word, i}
+        <span style="color: {wordIndex > i ? 'black' : 'white'}">{word} </span>
+      {/each}
+    </div>
+    <div class='line'>
+      {#each bLineWords as word, i}
+        <span style="color: {wordIndex >= (i + aLineWords.length) ? 'black' : 'white'}">{word} </span>
+      {/each}
+    </div>
   </div>
   {#if currentWord}
-  <div class='emanation'>
-    <span class='letters'>
-      {#each currentWord as letter, i}
-        <span style="color: {letterIndex >= i ? 'black' : 'white'}">{letter}</span>  
-      {/each}
-    </span>
-  </div>
+    <div class='emanation'>
+      <span class='letters'>
+        {#each currentWord as letter, i}
+          <span style="color: {letterIndex > i ? 'black' : 'white'}">{letter}</span>  
+        {/each}
+      </span>
+    </div>
   {/if}
 </div>
 
@@ -71,7 +84,21 @@
     flex-direction: column;
     justify-content: center;
     text-align: right;
-    /* border: 1px solid red; */
+    /* border: 1px dotted green; */
+  }
+  .distich {
+    position: relative;
+    /* border: 1px dashed red; */
+  }
+  .countdown-leader {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* border: 1px solid orange; */
   }
 
   .emanation {

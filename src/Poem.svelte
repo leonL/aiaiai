@@ -16,7 +16,7 @@
 
 <main id='aiwia'>
 	{#each activeVerses as verse, i}
-		<Couplet aLine={verse.a} bLine={verse.b} piId={verse.piId} coupletIndex={i} />
+		<Couplet aLine={verse.a} bLine={verse.b} piSlice={verse.piSlice} coupletIndex={i} />
 	{/each}
 	<!-- {#each activeVerses as verse, i}
 		<Verse lineA={verse.a} lineB={verse.b} piId={verse.piId} verseIndex={i}
@@ -26,7 +26,7 @@
 
 <style>
 	main {
-		font-size: 17px;
+		font-size: 4.5vw;
 		font-family: 'EB Garamond', serif;
 		display: flex;
 		flex-direction: column;

@@ -5,7 +5,7 @@
 
   const fillPercentStore = tweened(100, {duration: 750}),
       radiusStore = tweened(0.5, {delay: 1500, duration: 3000, easing: expoOut}),
-    radiusMax = 5, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
+    radiusMax = 1, doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
   let doubleR, circumfrence;
