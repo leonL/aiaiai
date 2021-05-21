@@ -14,7 +14,7 @@
   allWords = [...aLineWords, ...bLineWords],
   allWordsCount = allWords.length;
   
-  let wordIndex = 0, letterIndex = 0, showEmanationMagnifier = false;
+  let wordIndex = 0, letterIndex = 0, showEmanationMagnifier = true;
   
   const dispatch = createEventDispatcher();
   
@@ -26,7 +26,6 @@
   });
 
   async function emanateWords() {
-    showEmanationMagnifier = true;
     while (wordIndex < allWordsCount) {
       await emanateLetters();
       wordIndex++;

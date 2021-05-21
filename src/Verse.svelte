@@ -1,6 +1,7 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import Couplet from './Couplet.svelte';
+  import * as animateScroll from "svelte-scrollto";
 
   export let verse;
 
@@ -12,6 +13,9 @@
     if (++totalCoupletsEmenated === totalCouplets) dispatch('verseEmanated', true);
   };
 
+  onMount(_ => {
+    animateScroll.scrollToBottom({duration: 4000});
+  });
 
 </script>
 
