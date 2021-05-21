@@ -1,20 +1,23 @@
 <script>
-  import { onMount, tick } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte'; 
+  
   
   export let aLine;
   export let bLine;
   export let piSlice;
   export let coupletIndex;
-
+  
   let showCountdown = false, distichHeight;
-
+  
   const aLineWords = aLine.split(' '), bLineWords = bLine.split(' '),
-    allWords = [...aLineWords, ...bLineWords],
-    allWordsCount = allWords.length;
-
+  allWords = [...aLineWords, ...bLineWords],
+  allWordsCount = allWords.length;
+  
   let wordIndex = 0, letterIndex = 0;
-
+  
+  const dispatch = createEventDispatcher();
+  
   $: currentWord = (wordIndex < allWordsCount) ? allWords[wordIndex] : false;
   $: wordLength = currentWord.length;
 
@@ -27,6 +30,8 @@
       await emanateLetters();
       wordIndex++;
     }
+    dispatch('coupletEmenated', true);
+    return true;
   };
 
   function emanateLetters() {

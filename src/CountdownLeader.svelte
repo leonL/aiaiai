@@ -24,7 +24,7 @@
     await radiusStore.set(radiusMax);
     showPiSliceVal = true;
     await fillPercentStore.set(0);
-    dispatch('countdownComplete', true)
+    dispatch('countdownComplete', true);
 	});
 
 </script>
