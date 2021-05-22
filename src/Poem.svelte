@@ -4,9 +4,7 @@
 
 	export let title;
 
-	let totalVerses = amIWhatIam.length;
-	let verseIndex = 1; 
-	
+	let verseIndex = 1;
 	$: activeVerses = amIWhatIam.slice(0, verseIndex);
 </script>
 
@@ -15,17 +13,19 @@
 </svelte:head>
 
 <main id='aiwia'>
-	{#each activeVerses as verse, i}
+	{#each activeVerses.reverse() as verse (verse.verseNumber)}
 		<Verse {verse} on:verseEmanated={ () => verseIndex++ } />
 	{/each}
 </main>
 
 <style>
-	main {
+	#aiwia {
 		font-size: 4.5vw;
 		font-family: 'EB Garamond', serif;
 		display: flex;
-		flex-direction: column;
+		flex-direction: column-reverse;
 		height: 100%;
+		overflow-y: scroll;
+		padding-right: 10px;
 	}
 </style>
