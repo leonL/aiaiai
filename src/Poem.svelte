@@ -1,4 +1,5 @@
 <script>
+	import {flip} from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
 	import Verse from './Verse.svelte';
 
@@ -14,7 +15,9 @@
 
 <main id='aiwia'>
 	{#each activeVerses.reverse() as verse (verse.verseNumber)}
-		<Verse {verse} on:verseEmanated={ () => verseIndex++ } />
+		<div animate:flip={{duration: 500}}>
+			<Verse {verse} on:verseEmanated={ () => verseIndex++ } />
+		</div>
 	{/each}
 </main>
 

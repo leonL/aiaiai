@@ -1,12 +1,13 @@
 <script>
   import { tweened } from 'svelte/motion';
   import { onMount, createEventDispatcher } from 'svelte';
-  import { expoOut } from 'svelte/easing';
+  import { backIn } from 'svelte/easing';
 
   export let radiusMax;
+  export let delayFactor;
 
   const fillPercentStore = tweened(100, {duration: 3000}),
-      radiusStore = tweened(2, {delay: 1500, duration: 3000, easing: expoOut}),
+      radiusStore = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
     doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
@@ -34,9 +35,3 @@
     transform="rotate(-90, {doubleRadMax}, {doubleRadMax}) translate(0, {quadrupleRadMax}) scale(1,-1)"
   />
 </svg>
-
-<style>
-  .leader {
-    border: 0px solid pink;
-  }
-</style>

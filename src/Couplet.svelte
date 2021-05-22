@@ -5,6 +5,7 @@
   export let aLine;
   export let bLine;
   export let piSlice;
+  export let coupletIndex;
   
   const aLineWords = aLine.split(' '), bLineWords = bLine.split(' '),
     allWords = [...aLineWords, ...bLineWords],
@@ -53,7 +54,7 @@
   <div class='pi-slice'>
     {#if showCountdown}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={coupletHeight / Math.PI}
+        <CountdownLeader radiusMax={coupletHeight / Math.PI} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
           on:leaderWiped= { () => { showCountdown = false; emanateWords(); } } />
       </div>
@@ -102,7 +103,7 @@
     position: relative;
     font-family: 'Heebo', sans-serif;
     font-size: 3.5vw;
-    font-weight: 100;
+    font-weight: 400;
     width: 5%;
     /* border: 1px solid olivedrab; */
   }

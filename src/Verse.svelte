@@ -15,7 +15,7 @@
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
-    <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
+    <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} coupletIndex={i}
       on:coupletEmenated={ () => coupletEmanated(i) } />
   {/each}
 </div>
