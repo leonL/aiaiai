@@ -15,15 +15,13 @@
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
-    <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} coupletIndex={i} 
+    <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
       on:coupletEmenated={ () => coupletEmanated(i) } />
   {/each}
 </div>
 
 <style>
   .verse {
-    max-height: 75%;
-    flex-grow: 1;
     display: flex;
 		flex-direction: column;
     margin-bottom: 20px;

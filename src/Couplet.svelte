@@ -2,35 +2,32 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte'; 
   
-  
   export let aLine;
   export let bLine;
   export let piSlice;
-  export let coupletIndex;
-  
-  let showCountdown = false, distichHeight;
   
   const aLineWords = aLine.split(' '), bLineWords = bLine.split(' '),
-  allWords = [...aLineWords, ...bLineWords],
-  allWordsCount = allWords.length;
+    allWords = [...aLineWords, ...bLineWords],
+    allWordsCount = allWords.length;
   
-  let wordIndex = 0, letterIndex = 0, showEmanationMagnifier = true;
+  let wordIndex = 0, letterIndex = 0, 
+    showPiSlice = false, showCountdown = false,
+    coupletHeight;
   
   const dispatch = createEventDispatcher();
   
   $: currentWord = (wordIndex < allWordsCount) ? allWords[wordIndex] : false;
   $: wordLength = currentWord.length;
 
-  onMount(async () => {    
-    showCountdown = true;
-  });
+  onMount(() => {
+		showCountdown = true;
+	});
 
   async function emanateWords() {
     while (wordIndex < allWordsCount) {
       await emanateLetters();
       wordIndex++;
     }
-    showEmanationMagnifier = false;
     dispatch('coupletEmenated', true);
     return true;
   };
@@ -46,20 +43,26 @@
           clearInterval(letterInterval);
           resolve(true);
         };
-      }, 200);
+      }, 10);
     });
     return emanateLettersPromise;
   };
 </script>
 
-<div class='couplet' {coupletIndex} >
-  <div class='distich' bind:clientHeight={distichHeight}>
+<div class='couplet' bind:clientHeight={coupletHeight} >
+  <div class='pi-slice'>
     {#if showCountdown}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={distichHeight / 2} piSlice={piSlice} 
-          on:countdownComplete= { () => { showCountdown = false; emanateWords(); } } />
+        <CountdownLeader radiusMax={coupletHeight / Math.PI}
+          on:leaderDilated= { () => { showPiSlice = true; } }
+          on:leaderWiped= { () => { showCountdown = false; emanateWords(); } } />
       </div>
     {/if}
+    {#if showPiSlice}
+      {piSlice}
+    {/if}
+  </div>
+  <div class='distich'>
     <div class='line'>
       {#each aLineWords as word, i}
         <span style="color: {wordIndex > i ? 'black' : 'white'}">{word} </span>
@@ -71,7 +74,8 @@
       {/each}
     </div>
   </div>
-  {#if showEmanationMagnifier}
+</div>
+{#if false}
     <div class='emanation'>
       <span class='letters'>
         {#each currentWord as letter, i}
@@ -80,33 +84,43 @@
       </span>
     </div>
   {/if}
-</div>
 
 <style>
   .couplet {
-    margin: 5px 5px;
+    margin: 5px 0;
     flex-grow: 1;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
     text-align: right;
     /* border: 1px dotted green; */
   }
-  .distich {
+
+  .pi-slice {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     position: relative;
-    /* border: 1px dashed red; */
+    font-family: 'Heebo', sans-serif;
+    font-size: 3.5vw;
+    font-weight: 100;
+    width: 5%;
+    /* border: 1px solid olivedrab; */
   }
   .countdown-leader {
     position: absolute;
-    top: 0;
-    bottom: 0;
-    width: 100%;
+    top: -5px;
+    bottom: -5px;
+    left: -5px;
+    right: -5px;
     display: flex;
     align-items: center;
     justify-content: center;
     /* border: 1px solid orange; */
   }
-
+  .distich {
+    flex-grow: 1;
+    /* border: 1px dashed red; */
+  }
   .emanation {
     text-align: center;
     /* border: 1px dotted black; */

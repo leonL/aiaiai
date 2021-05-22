@@ -20,12 +20,12 @@
 
 <style>
 	#aiwia {
-		font-size: 4.5vw;
+		font-size: 4vw;
 		font-family: 'EB Garamond', serif;
 		display: flex;
 		flex-direction: column-reverse;
 		height: 100%;
 		overflow-y: scroll;
-		padding-right: 10px;
+		padding: 0 10px;
 	}
 </style>
