@@ -19,7 +19,7 @@
 	function removeWordFromQueue(word) {
 		let wordRemoved = wordQueue.shift();
 		if (wordRemoved !== word) {
-			console.warn(`The word removed from the word queue "${wordRemoved}" is not the expected one "${word}".`);
+			console.warn(`The word removed from the word queue "${wordRemoved}" is not the expected one "${word}".`)
 		};
 	} 
 </script>

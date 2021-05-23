@@ -26,7 +26,7 @@
         letterInterval = false;
         letterSpan = 0;
       };
-    }, 1000);
+    }, 250);
   };
 </script>
 
@@ -43,5 +43,11 @@
     width: 100%;
     text-align: center;
     font-size: 12vw;
+    min-height: 10%;
+  }
+
+  .letter {
+    margin: 0 -5px;
+    /* border: 1px dotted red; */
   }
 </style>
