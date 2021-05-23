@@ -21,9 +21,9 @@
   function countdownToReveal(_) {
     if (++countdown === verse.couplets.length) {
       let revealWordInterval = setInterval(() => {
-        let linesWithConcealedWords = linesWithConcealedWordsByCoupletIndex();
-        if (linesWithConcealedWords.length > 0) {
-          revealWordAtRandom(linesWithConcealedWords);
+        let concealedLinesMeta = getConcealedLinesMetaData();
+        if (concealedLinesMeta.length > 0) {
+          revealWordAtRandom(concealedLinesMeta);
         } else {
           dispatch('verseRevealed', true)
           clearInterval(revealWordInterval);
@@ -32,25 +32,29 @@
     };
   };
 
-  function revealWordAtRandom(lines) {
-    let randomLine = lines[getRandomIntInclusive(lines.length - 1)],
-        concealedWordsIndex = verse.couplets[randomLine.coupletIndex][`${randomLine.line}ConcealedWords`],
-        randomWordIndex = getRandomIntInclusive(concealedWordsIndex.length - 1);
+  function revealWordAtRandom(linesMetaData) {
+    let selectedLineMeta = linesMetaData[getRandomInt(linesMetaData.length - 1)],
+        concealedWordIndicies = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}ConcealedWords`],
+        selectedWordConcealedIndex = getRandomInt(concealedWordIndicies.length - 1);
 
-    concealedWordsIndex.splice(randomWordIndex, 1);
+    let selectedWordIndex = (concealedWordIndicies.splice(selectedWordConcealedIndex, 1))[0],
+        selectedLineWords = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}Words`],
+        selectedWord = selectedLineWords[selectedWordIndex];
+
+    dispatch('wordRevealed', selectedWord);
     verse = verse; // trigger component update
   };
 
-  function linesWithConcealedWordsByCoupletIndex() {
-    let linesWithConcealedWords = [];
+  function getConcealedLinesMetaData() {
+    let concealedLines = [];
     verse.couplets.forEach((couplet, cIndex) => {
-      if (couplet.aConcealedWords.length > 0) linesWithConcealedWords.push({coupletIndex: cIndex, line: 'a'});
-      if (couplet.bConcealedWords.length > 0) linesWithConcealedWords.push({coupletIndex: cIndex, line: 'b'});
+      if (couplet.aConcealedWords.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'a'});
+      if (couplet.bConcealedWords.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'b'});
     });
-    return linesWithConcealedWords; 
+    return concealedLines; 
   } 
 
-  function getRandomIntInclusive(max, min = 0) {
+  function getRandomInt(max, min = 0) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
