@@ -7,23 +7,23 @@
   let countdown = 0;
   const dispatch = createEventDispatcher();
 
-  function wrapCouplet(c) {
-    c.aWords = c.a.split(' ');
-    c.aConcealedWords = Array.from(c.aWords, (_, i) => i);  
-    c.bWords = c.b.split(' ');
-    c.bConcealedWords = Array.from(c.bWords, (_, i) => i);
+  function addMetaDataToCouplet(couplet) {
+    couplet.aWords = couplet.a.split(' ');
+    couplet.aConcealedWords = Array.from(couplet.aWords, (_, i) => i);  
+    couplet.bWords = couplet.b.split(' ');
+    couplet.bConcealedWords = Array.from(couplet.bWords, (_, i) => i);
   };
   
   verse.couplets.forEach(couplet => {
-    wrapCouplet(couplet); 
+    addMetaDataToCouplet(couplet); 
   });
   
-  function revealWordsCountdown(_) {
+  function countdownToReveal(_) {
     if (++countdown === verse.couplets.length) {
       let revealWordInterval = setInterval(() => {
         let linesWithConcealedWords = linesWithConcealedWordsByCoupletIndex();
         if (linesWithConcealedWords.length > 0) {
-          revealWord(linesWithConcealedWords);
+          revealWordAtRandom(linesWithConcealedWords);
         } else {
           dispatch('verseRevealed', true)
           clearInterval(revealWordInterval);
@@ -32,12 +32,13 @@
     };
   };
 
-  function revealWord(lines) {
-    let randomLine = lines[getRandomIntInclusive(0, lines.length - 1)];
-    let concealedWordsIndex = verse.couplets[randomLine.coupletIndex][`${randomLine.line}ConcealedWords`];
-    let randomWordIndex = getRandomIntInclusive(0, concealedWordsIndex.length - 1);
+  function revealWordAtRandom(lines) {
+    let randomLine = lines[getRandomIntInclusive(lines.length - 1)],
+        concealedWordsIndex = verse.couplets[randomLine.coupletIndex][`${randomLine.line}ConcealedWords`],
+        randomWordIndex = getRandomIntInclusive(concealedWordsIndex.length - 1);
+
     concealedWordsIndex.splice(randomWordIndex, 1);
-    verse = verse;
+    verse = verse; // trigger component update
   };
 
   function linesWithConcealedWordsByCoupletIndex() {
@@ -49,7 +50,7 @@
     return linesWithConcealedWords; 
   } 
 
-  function getRandomIntInclusive(min, max) {
+  function getRandomIntInclusive(max, min = 0) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   };
 
@@ -60,7 +61,7 @@
     <Couplet aLineWords={couplet.aWords} aLineConcealedWords={couplet.aConcealedWords}
       bLineWords={couplet.bWords} bLineConcealedWords={couplet.bConcealedWords}
       piSlice={couplet.piSlice} coupletIndex={i}
-      on:countdownStep={ () => revealWordsCountdown(i) } />
+      on:countdownStep={ () => countdownToReveal(i) } />
   {/each}
 </div>
 
