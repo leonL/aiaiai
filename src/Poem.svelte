@@ -16,7 +16,7 @@
 <main id='aiwia'>
 	{#each activeVerses.reverse() as verse (verse.verseNumber)}
 		<div animate:flip={{duration: 500}}>
-			<Verse {verse} on:verseEmanated={ () => verseIndex++ } />
+			<Verse {verse} on:verseRevealed={ () => verseIndex++ } />
 		</div>
 	{/each}
 </main>

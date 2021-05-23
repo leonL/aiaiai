@@ -4,8 +4,8 @@ const amIWhatIAm = [
     couplets: [
       {
         piSlice: 3,
-        a: "a wet, market smile on my forgettable face",
-        b: "delivering that neighbourly something to your hood" 
+        a: "a wet, market smile on your forgettable face",
+        b: "delivering that neighbourly something to our hood" 
       },
       {
         piSlice: 2,

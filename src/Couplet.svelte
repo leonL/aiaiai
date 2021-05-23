@@ -2,52 +2,21 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte'; 
   
-  export let aLine;
-  export let bLine;
+  export let aLineWords;
+  export let aLineConcealedWords;
+  export let bLineWords;
+  export let bLineConcealedWords;
   export let piSlice;
   export let coupletIndex;
   
-  const aLineWords = aLine.split(' '), bLineWords = bLine.split(' '),
-    allWords = [...aLineWords, ...bLineWords],
-    allWordsCount = allWords.length;
-  
-  let wordIndex = 0, letterIndex = 0, 
-    showPiSlice = false, showCountdown = false,
-    coupletHeight;
+  let showPiSlice = false, showCountdown = false, coupletHeight;
   
   const dispatch = createEventDispatcher();
-  
-  $: currentWord = (wordIndex < allWordsCount) ? allWords[wordIndex] : false;
-  $: wordLength = currentWord.length;
 
   onMount(() => {
 		showCountdown = true;
 	});
 
-  async function emanateWords() {
-    while (wordIndex < allWordsCount) {
-      await emanateLetters();
-      wordIndex++;
-    }
-    dispatch('coupletEmenated', true);
-    return true;
-  };
-
-  function emanateLetters() {
-    letterIndex = 0;
-    
-    const emanateLettersPromise = new Promise(resolve => {
-      let letterInterval = setInterval(() => {
-        if (letterIndex < wordLength) {
-          letterIndex++;
-        } else {
-          clearInterval(letterInterval);
-          resolve(true);
-        };
-      }, 10);
-    });
-    return emanateLettersPromise;
-  };
 </script>
 
 <div class='couplet' bind:clientHeight={coupletHeight} >
@@ -56,7 +25,7 @@
       <div class='countdown-leader'>
         <CountdownLeader radiusMax={coupletHeight / Math.PI} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
-          on:leaderWiped= { () => { showCountdown = false; emanateWords(); } } />
+          on:leaderWiped= { () => { showCountdown = false; dispatch('countdownStep', true); } } />
       </div>
     {/if}
     {#if showPiSlice}
@@ -66,25 +35,16 @@
   <div class='distich'>
     <div class='line'>
       {#each aLineWords as word, i}
-        <span style="color: {wordIndex > i ? 'black' : 'white'}">{word} </span>
+        <span class='word' style="opacity: {aLineConcealedWords.includes(i) ? 0 : 100}">{word} </span>
       {/each}
     </div>
     <div class='line'>
       {#each bLineWords as word, i}
-        <span style="color: {wordIndex >= (i + aLineWords.length) ? 'black' : 'white'}">{word} </span>
+        <span class='word' style="opacity: {bLineConcealedWords.includes(i) ? 0 : 100}">{word} </span>
       {/each}
     </div>
   </div>
 </div>
-{#if false}
-    <div class='emanation'>
-      <span class='letters'>
-        {#each currentWord as letter, i}
-          <span style="color: {letterIndex > i ? 'black' : 'white'}">{letter}</span>  
-        {/each}
-      </span>
-    </div>
-  {/if}
 
 <style>
   .couplet {
@@ -122,12 +82,7 @@
     flex-grow: 1;
     /* border: 1px dashed red; */
   }
-  .emanation {
-    text-align: center;
-    /* border: 1px dotted black; */
-  }
-  .letters {
-    font-size: 15vw;
-    /* border: 1px dashed orange; */
+  .word {
+    transition: opacity 20s 0s ease-in;
   }
 </style>
