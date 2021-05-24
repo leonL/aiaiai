@@ -41,11 +41,13 @@
 			</div>
 		{/each}
 	</div>
-	{#if theWord}
-		<div class='emanation'>
-			{theWord}
-		</div>
-	{/if}
+	<div class='emanation'>
+		{#if theWord}
+			<span class='the-word'>
+				{theWord}
+			</span>
+		{/if}
+	</div>
 </main>
 
 <style>
@@ -58,8 +60,16 @@
 
 	.emanation {
     width: 100%;
-    text-align: center;
-    font-size: 12vw;
+		min-height: 12%;
+		display: flex;
+		align-items: center;
+    justify-content: center;
+		background-color: black;
+	}
+	.the-word {
+		color: white;
+		font-size: 12vw;
+		padding-bottom: 5px;
 	}
 	.aiwia {
 		font-size: 4vw;
