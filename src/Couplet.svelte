@@ -35,12 +35,12 @@
   <div class='distich'>
     <div class='line'>
       {#each aLineLetters as letter, i}
-        <span class='letter' style="opacity: {aLineConcealedLetters.includes(i) ? 0 : 100}">{letter}</span>
+        <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
       {/each}
     </div>
     <div class='line'>
       {#each bLineLetters as letter, i}
-        <span class='letter' style="opacity: {bLineConcealedLetters.includes(i) ? 0 : 100}">{letter}</span>
+        <span class='letter' class:concealed={bLineConcealedLetters.includes(i)}>{letter}</span>
       {/each}
     </div>
   </div>
@@ -83,6 +83,13 @@
     /* border: 1px dashed red; */
   }
   .letter {
+    opacity: 100;
+    font-size: 4vw;
     transition: opacity 1.5s 0s ease;
+    transition: font-size 1.5s 0s ease;
+  }
+  .letter.concealed {
+    opacity: 0;
+    font-size: 3vw;
   }
 </style>
