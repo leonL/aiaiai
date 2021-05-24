@@ -85,8 +85,9 @@
   .letter {
     opacity: 100;
     font-size: 4vw;
-    transition: opacity 1.5s 0s ease;
-    transition: font-size 1s 0s ease;
+    transition-property: opacity, font-size;
+    transition-duration: 5s;
+    transition-timing-function: ease-in;
   }
   .letter.concealed {
     opacity: 0;
