@@ -3,6 +3,7 @@
   import Couplet from './Couplet.svelte';
   
   export let verse;
+  export let verseNumber;
   
   let countdown = 0, iAmCoupletIndex = -1;
   const dispatch = createEventDispatcher();
@@ -25,7 +26,7 @@
         if (concealedLinesMeta.length > 0) {
           revealLetterAtRandom(concealedLinesMeta);
         } else {
-          dispatch('verseRevealed', true)
+          dispatch('verseRevealed', {verseNumber: verseNumber, iAmCoupletIndex: iAmCoupletIndex})
           clearInterval(revealLettersInterval);
         };
       }, 100);
@@ -54,9 +55,7 @@
   };
 
   function iAm(coupletIndex) {
-    if (iAmCoupletIndex === -1) {
-      iAmCoupletIndex = coupletIndex;
-    }
+    if (iAmCoupletIndex === -1) iAmCoupletIndex = coupletIndex;
     return true;
   };
 

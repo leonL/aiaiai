@@ -50,7 +50,7 @@
   <div class='distich'>
     <div class='line'>
       {#if iAm}
-        <span id='i-am' transition:fade="{{ duration: (minsToMillisecs(10)), easing: bounceInOut}}" on:introend={() => iAm = false}>I am</span>
+        <span id='i-am' transition:fade="{{ duration: (minsToMillisecs(5)), easing: bounceInOut}}" on:introend={() => iAm = false}>I am</span>
       {/if}
       {#each aLineLetters as letter, i}
         <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>

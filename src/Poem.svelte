@@ -5,25 +5,25 @@
 	import Verse from './Verse.svelte';
 
 	export let title;
-	
-	let theWord;
+		
+	let activeVerseSpan = 1;
+	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
 
-	let verseIndex = 1;
-	$: activeVersesInReverse = amIWhatIam.slice(0, verseIndex).reverse();
+	let pronouncement;
 
-	function nextVerse() {
-		let verseWords = [];
-		amIWhatIam[verseIndex - 1].couplets.forEach(couplet => {
-			verseWords = [...verseWords, ...couplet.a.split(' '), ...couplet.b.split(' ')];			
-		});
+	function pronounceCouplet(verseCoupletIndicies) {
+		let { verseNumber, iAmCoupletIndex } = verseCoupletIndicies,
+			verseIndex = verseNumber - 1,
+			couplet = amIWhatIam[verseIndex].couplets[iAmCoupletIndex],
+			wordsToPronounce = [...couplet.a.split(' '), ...couplet.b.split(' ')];
 
 		let wordInterval = setInterval(() => {
-			if (verseWords.length > 0) {
-				theWord = verseWords.shift();
+			if (wordsToPronounce.length > 0) {
+				pronouncement = wordsToPronounce.shift();
 			} else {
 				clearInterval(wordInterval);
-				theWord = "";
-				verseIndex++;
+				pronouncement = false;
+				activeVerseSpan++;
 			}
 		}, 2000);
 	}
@@ -35,16 +35,16 @@
 
 <main>
 	<div class='aiwia'>
-		{#each activeVersesInReverse as verse (verse.verseNumber)}
+		{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 			<div animate:flip={{duration: 500}}>
-				<Verse {verse} on:verseRevealed={ () => nextVerse() } />
+				<Verse {verse} on:verseRevealed={ (event) => pronounceCouplet(event.detail) } verseNumber={verse.verseNumber} />
 			</div>
 		{/each}
 	</div>
 	<div class='emanation'>
-		{#if theWord}
+		{#if pronouncement}
 			<span class='the-word'>
-				{theWord}
+				{pronouncement}
 			</span>
 		{/if}
 	</div>
