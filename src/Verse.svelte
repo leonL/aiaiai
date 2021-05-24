@@ -7,49 +7,48 @@
   let countdown = 0;
   const dispatch = createEventDispatcher();
 
-  function addMetaDataToCouplet(couplet) {
-    couplet.aWords = couplet.a.split(' ');
-    couplet.aConcealedWords = Array.from(couplet.aWords, (_, i) => i);  
-    couplet.bWords = couplet.b.split(' ');
-    couplet.bConcealedWords = Array.from(couplet.bWords, (_, i) => i);
+  function addLetterMetaDataToCouplet(couplet) {
+    couplet.aLetters = couplet.a.split('');
+    couplet.aConcealedLetters = Array.from(couplet.aLetters, (_, i) => i);  
+    couplet.bLetters = couplet.b.split('');
+    couplet.bConcealedLetters = Array.from(couplet.bLetters, (_, i) => i);
   };
   
   verse.couplets.forEach(couplet => {
-    addMetaDataToCouplet(couplet); 
+    addLetterMetaDataToCouplet(couplet); 
   });
   
-  function countdownToReveal(_) {
+  function countdownToLetterFadeIn(_) {
     if (++countdown === verse.couplets.length) {
-      let revealWordInterval = setInterval(() => {
+      let revealLettersInterval = setInterval(() => {
         let concealedLinesMeta = getConcealedLinesMetaData();
         if (concealedLinesMeta.length > 0) {
-          revealWordAtRandom(concealedLinesMeta);
+          revealLetterAtRandom(concealedLinesMeta);
         } else {
           dispatch('verseRevealed', true)
-          clearInterval(revealWordInterval);
+          clearInterval(revealLettersInterval);
         };
-      }, 750);
+      }, 100);
     };
   };
 
-  function revealWordAtRandom(linesMetaData) {
+  function revealLetterAtRandom(linesMetaData) {
     let selectedLineMeta = linesMetaData[getRandomInt(linesMetaData.length - 1)],
-        concealedWordIndicies = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}ConcealedWords`],
-        selectedWordConcealedIndex = getRandomInt(concealedWordIndicies.length - 1);
+        concealedLettersIndicies = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}ConcealedLetters`],
+        selectedLettersConcealedIndex = getRandomInt(concealedLettersIndicies.length - 1);
 
-    let selectedWordIndex = (concealedWordIndicies.splice(selectedWordConcealedIndex, 1))[0],
-        selectedLineWords = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}Words`],
-        selectedWord = selectedLineWords[selectedWordIndex];
-
-    dispatch('wordRevealed', selectedWord);
+    let selectedLetterIndex = (concealedLettersIndicies.splice(selectedLettersConcealedIndex, 1))[0],
+        selectedLineLetters = verse.couplets[selectedLineMeta.coupletIndex][`${selectedLineMeta.line}Letters`],
+        selectedLetter = selectedLineLetters[selectedLetterIndex];
     verse = verse; // trigger component update
+    return selectedLetter;
   };
 
   function getConcealedLinesMetaData() {
     let concealedLines = [];
     verse.couplets.forEach((couplet, cIndex) => {
-      if (couplet.aConcealedWords.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'a'});
-      if (couplet.bConcealedWords.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'b'});
+      if (couplet.aConcealedLetters.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'a'});
+      if (couplet.bConcealedLetters.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'b'});
     });
     return concealedLines; 
   } 
@@ -62,10 +61,10 @@
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
-    <Couplet aLineWords={couplet.aWords} aLineConcealedWords={couplet.aConcealedWords}
-      bLineWords={couplet.bWords} bLineConcealedWords={couplet.bConcealedWords}
+    <Couplet aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
+      bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
       piSlice={couplet.piSlice} coupletIndex={i}
-      on:countdownStep={ () => countdownToReveal(i) } />
+      on:countdownStep={ () => countdownToLetterFadeIn(i) } />
   {/each}
 </div>
 

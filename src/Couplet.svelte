@@ -2,10 +2,10 @@
   import { onMount, createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte'; 
   
-  export let aLineWords;
-  export let aLineConcealedWords;
-  export let bLineWords;
-  export let bLineConcealedWords;
+  export let aLineLetters;
+  export let aLineConcealedLetters;
+  export let bLineLetters;
+  export let bLineConcealedLetters;
   export let piSlice;
   export let coupletIndex;
   
@@ -34,13 +34,13 @@
   </div>
   <div class='distich'>
     <div class='line'>
-      {#each aLineWords as word, i}
-        <span class='word' style="opacity: {aLineConcealedWords.includes(i) ? 0 : 100}">{word} </span>
+      {#each aLineLetters as letter, i}
+        <span class='letter' style="opacity: {aLineConcealedLetters.includes(i) ? 0 : 100}">{letter}</span>
       {/each}
     </div>
     <div class='line'>
-      {#each bLineWords as word, i}
-        <span class='word' style="opacity: {bLineConcealedWords.includes(i) ? 0 : 100}">{word} </span>
+      {#each bLineLetters as letter, i}
+        <span class='letter' style="opacity: {bLineConcealedLetters.includes(i) ? 0 : 100}">{letter}</span>
       {/each}
     </div>
   </div>
@@ -82,7 +82,7 @@
     flex-grow: 1;
     /* border: 1px dashed red; */
   }
-  .word {
-    transition: opacity 20s 0s ease-in;
+  .letter {
+    transition: opacity 1.5s 0s ease;
   }
 </style>
