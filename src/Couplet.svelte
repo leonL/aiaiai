@@ -1,6 +1,9 @@
 <script>
-  import { onMount, createEventDispatcher } from 'svelte';
-  import CountdownLeader from './CountdownLeader.svelte'; 
+  import { onMount, beforeUpdate, createEventDispatcher } from 'svelte';
+  import { fade } from 'svelte/transition';
+  import { circInOut } from 'svelte/easing';
+  import CountdownLeader from './CountdownLeader.svelte';
+
   
   export let aLineLetters;
   export let aLineConcealedLetters;
@@ -8,10 +11,16 @@
   export let bLineConcealedLetters;
   export let piSlice;
   export let coupletIndex;
+  export let iAm = false;
   
   let showPiSlice = false, showCountdown = false, coupletHeight;
   
   const dispatch = createEventDispatcher();
+
+  beforeUpdate(() => {
+    let allLettersRevealed = aLineConcealedLetters.length + bLineConcealedLetters.length === 0;
+    if (allLettersRevealed) dispatch('allLettersRevealed', coupletIndex);
+  });
 
   onMount(() => {
 		showCountdown = true;
@@ -34,6 +43,9 @@
   </div>
   <div class='distich'>
     <div class='line'>
+      {#if iAm}
+        <span id='i-am' transition:fade="{{ duration: 360000, easing: circInOut}}" on:introend={() => iAm = false}>I am</span>
+      {/if}
       {#each aLineLetters as letter, i}
         <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
       {/each}
@@ -80,11 +92,14 @@
   }
   .distich {
     flex-grow: 1;
+    font-size: 4vw;
     /* border: 1px dashed red; */
+  }
+  #i-am {
+    font-style: italic;
   }
   .letter {
     opacity: 100;
-    font-size: 4vw;
     transition-property: opacity, font-size;
     transition-duration: 5s;
     transition-timing-function: ease-in;

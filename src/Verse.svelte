@@ -4,7 +4,7 @@
   
   export let verse;
   
-  let countdown = 0;
+  let countdown = 0, iAmCoupletIndex = -1;
   const dispatch = createEventDispatcher();
 
   function addLetterMetaDataToCouplet(couplet) {
@@ -51,7 +51,14 @@
       if (couplet.bConcealedLetters.length > 0) concealedLines.push({coupletIndex: cIndex, line: 'b'});
     });
     return concealedLines; 
-  } 
+  };
+
+  function iAm(coupletIndex) {
+    if (iAmCoupletIndex === -1) {
+      iAmCoupletIndex = coupletIndex;
+    }
+    return true;
+  };
 
   function getRandomInt(max, min = 0) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -63,8 +70,9 @@
   {#each verse.couplets as couplet, i}
     <Couplet aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
-      piSlice={couplet.piSlice} coupletIndex={i}
-      on:countdownStep={ () => countdownToLetterFadeIn(i) } />
+      piSlice={couplet.piSlice} coupletIndex={i} iAm={ iAmCoupletIndex === i }
+      on:countdownStep={ () => countdownToLetterFadeIn(i) }
+      on:allLettersRevealed={ (event) => iAm(event.detail) } />
   {/each}
 </div>
 
