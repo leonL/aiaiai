@@ -3,25 +3,30 @@
 	import amIWhatIam from './data/amIWhatIAm.js';
 
 	import Verse from './Verse.svelte';
-	import Emanation from './Emanation.svelte';
 
 	export let title;
 	
-	let wordQueue = [];
+	let theWord;
 
 	let verseIndex = 1;
 	$: activeVersesInReverse = amIWhatIam.slice(0, verseIndex).reverse();
 
-	function addWordToQueue(word) {
-		wordQueue = [...wordQueue, word];
-	};
+	function nextVerse() {
+		let verseWords = [];
+		amIWhatIam[verseIndex - 1].couplets.forEach(couplet => {
+			verseWords = [...verseWords, ...couplet.a.split(' '), ...couplet.b.split(' ')];			
+		});
 
-	function removeWordFromQueue(word) {
-		let wordRemoved = wordQueue.shift();
-		if (wordRemoved !== word) {
-			console.warn(`The word removed from the word queue "${wordRemoved}" is not the expected one "${word}".`)
-		};
-	} 
+		let wordInterval = setInterval(() => {
+			if (verseWords.length > 0) {
+				theWord = verseWords.shift();
+			} else {
+				clearInterval(wordInterval);
+				theWord = "";
+				verseIndex++;
+			}
+		}, 2000);
+	}
 </script>
 
 <svelte:head>
@@ -32,11 +37,15 @@
 	<div class='aiwia'>
 		{#each activeVersesInReverse as verse (verse.verseNumber)}
 			<div animate:flip={{duration: 500}}>
-				<Verse {verse} on:verseRevealed={ () => verseIndex++ } on:wordRevealed= { event => addWordToQueue(event.detail) } />
+				<Verse {verse} on:verseRevealed={ () => nextVerse() } />
 			</div>
 		{/each}
 	</div>
-	<Emanation {wordQueue} on:emanatingTheWord= { (event) => removeWordFromQueue(event.detail) } />
+	{#if theWord}
+		<div class='emanation'>
+			{theWord}
+		</div>
+	{/if}
 </main>
 
 <style>
@@ -45,6 +54,12 @@
 		font-family: 'EB Garamond', serif;
 		display: flex;
 		flex-direction: column;
+	}
+
+	.emanation {
+    width: 100%;
+    text-align: center;
+    font-size: 12vw;
 	}
 	.aiwia {
 		font-size: 4vw;
