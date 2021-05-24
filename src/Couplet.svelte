@@ -1,7 +1,7 @@
 <script>
   import { onMount, beforeUpdate, createEventDispatcher } from 'svelte';
   import { fade } from 'svelte/transition';
-  import { circInOut } from 'svelte/easing';
+  import { bounceInOut } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
 
   
@@ -26,6 +26,12 @@
 		showCountdown = true;
 	});
 
+  function minsToMillisecs(mins) {
+    const oneMinuteInMilliseconds = 60000;
+    let millisecs = mins * oneMinuteInMilliseconds;
+    return millisecs;
+  };
+
 </script>
 
 <div class='couplet' bind:clientHeight={coupletHeight} >
@@ -44,7 +50,7 @@
   <div class='distich'>
     <div class='line'>
       {#if iAm}
-        <span id='i-am' transition:fade="{{ duration: 360000, easing: circInOut}}" on:introend={() => iAm = false}>I am</span>
+        <span id='i-am' transition:fade="{{ duration: (minsToMillisecs(10)), easing: bounceInOut}}" on:introend={() => iAm = false}>I am</span>
       {/if}
       {#each aLineLetters as letter, i}
         <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
