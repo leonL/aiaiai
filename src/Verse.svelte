@@ -1,12 +1,12 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import Couplet from './Couplet.svelte';
+  import CoupletMagnifier from './CoupletMagnifier.svelte';
   
   export let verse;
-  export let verseNumber;
   
-  let countdown = 0, iAmCoupletIndex = -1;
-  const dispatch = createEventDispatcher();
+  let countdown = 0, iAmCoupletIndex;
+  $: iAmCoupletRevealed = iAmCoupletIndex !== undefined;
 
   function addLetterMetaDataToCouplet(couplet) {
     couplet.aLetters = couplet.a.split('');
@@ -26,7 +26,6 @@
         if (concealedLinesMeta.length > 0) {
           revealLetterAtRandom(concealedLinesMeta);
         } else {
-          dispatch('verseRevealed', {verseNumber: verseNumber, iAmCoupletIndex: iAmCoupletIndex})
           clearInterval(revealLettersInterval);
         };
       }, 100);
@@ -54,8 +53,11 @@
     return concealedLines; 
   };
 
-  function iAm(coupletIndex) {
-    if (iAmCoupletIndex === -1) iAmCoupletIndex = coupletIndex;
+  function coupletRevealed(coupletIndex) {
+    let iAmCoupletConcealed = !iAmCoupletRevealed;
+    if (iAmCoupletConcealed) {
+      iAmCoupletIndex = coupletIndex;
+    }
     return true;
   };
 
@@ -69,14 +71,18 @@
   {#each verse.couplets as couplet, i}
     <Couplet aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
-      piSlice={couplet.piSlice} coupletIndex={i} iAm={ iAmCoupletIndex === i }
+      piSlice={couplet.piSlice} coupletIndex={i} aiwia={ iAmCoupletRevealed && iAmCoupletIndex === i }
       on:countdownStep={ () => countdownToLetterFadeIn(i) }
-      on:allLettersRevealed={ (event) => iAm(event.detail) } />
+      on:allLettersRevealed={ (event) => coupletRevealed(event.detail) } />
   {/each}
+  {#if iAmCoupletRevealed}
+    <CoupletMagnifier couplet={verse.couplets[iAmCoupletIndex]} on:iAmCoupletMagnified />
+  {/if}
 </div>
 
 <style>
   .verse {
+    position: relative;
     display: flex;
 		flex-direction: column;
     margin-bottom: 20px;

@@ -3,33 +3,11 @@
 	import amIWhatIam from './data/amIWhatIAm.js';
 
 	import Verse from './Verse.svelte';
-	import Pacesetter from './Pacesetter.svelte';
 
 	export let title;
 		
 	let activeVerseSpan = 1;
 	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
-
-	let couplet = amIWhatIam[0].couplets[0];
-
-	let pronouncement;
-
-	// function pronounceCouplet(verseCoupletIndicies) {
-	// 	let { verseNumber, iAmCoupletIndex } = verseCoupletIndicies,
-	// 		verseIndex = verseNumber - 1,
-	// 		couplet = amIWhatIam[verseIndex].couplets[iAmCoupletIndex],
-	// 		wordsToPronounce = [...couplet.a.split(' '), ...couplet.b.split(' ')];
-
-	// 	let wordInterval = setInterval(() => {
-	// 		if (wordsToPronounce.length > 0) {
-	// 			pronouncement = wordsToPronounce.shift();
-	// 		} else {
-	// 			clearInterval(wordInterval);
-	// 			pronouncement = false;
-	// 			activeVerseSpan++;
-	// 		}
-	// 	}, 2000);
-	// }
 </script>
 
 <svelte:head>
@@ -40,11 +18,10 @@
 	<div class='aiwia'>
 		{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 			<div animate:flip={{duration: 500}}>
-				<Verse {verse} on:verseRevealed={ (event) => activeVerseSpan++ } verseNumber={verse.verseNumber} />
+				<Verse {verse} on:iAmCoupletMagnified={ (event) => activeVerseSpan++ } />
 			</div>
 		{/each}
 	</div>
-	<Pacesetter {couplet} />
 </main>
 
 <style>
