@@ -1,5 +1,4 @@
 <script>
-  import { createEventDispatcher } from 'svelte';
   import Couplet from './Couplet.svelte';
   import CoupletMagnifier from './CoupletMagnifier.svelte';
   
@@ -69,7 +68,8 @@
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
-    <Couplet aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
+    <Couplet aLine={couplet.a} bLine={couplet.b}  
+      aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
       piSlice={couplet.piSlice} coupletIndex={i} aiwia={ iAmCoupletRevealed && iAmCoupletIndex === i }
       on:countdownStep={ () => countdownToLetterFadeIn(i) }

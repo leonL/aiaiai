@@ -1,10 +1,11 @@
 <script>
   import { onMount, beforeUpdate, createEventDispatcher } from 'svelte';
-  import { fade } from 'svelte/transition';
+  import { fade, crossfade, blur } from 'svelte/transition';
   import { bounceInOut } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
-
   
+  export let aLine;
+  export let bLine;
   export let aLineLetters;
   export let aLineConcealedLetters;
   export let bLineLetters;
@@ -12,10 +13,14 @@
   export let piSlice;
   export let coupletIndex;
   export let aiwia = false;
+
+  let aLineWords = aLine.slice(' ');
+  let bLineWords = bLine.slice(' ');
   
   let showPiSlice = false, showCountdown = false, coupletHeight;
   
   const dispatch = createEventDispatcher();
+  const [send, receive] = crossfade({duration: 5000});
 
   beforeUpdate(() => {
     let allLettersRevealed = aLineConcealedLetters.length + bLineConcealedLetters.length === 0;
@@ -48,20 +53,31 @@
     {/if}
   </div>
   <div class='distich'>
-    <div class='line'>
-      {#if aiwia}
-        <span id='i-am' transition:fade="{{ duration: (minsToMillisecs(5)), easing: bounceInOut}}" 
+    {#if aiwia}
+      <div class='line' transition:blur={{duration: 750, opacity: 25}}>
+        <span id='i-am' transition:fade={{ duration: (minsToMillisecs(5)), easing: bounceInOut}} 
           on:introend={() => aiwia = false}>I am</span>
-      {/if}
-      {#each aLineLetters as letter, i}
-        <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
-      {/each}
-    </div>
-    <div class='line'>
-      {#each bLineLetters as letter, i}
-        <span class='letter' class:concealed={bLineConcealedLetters.includes(i)}>{letter}</span>
-      {/each}
-    </div>
+        {#each aLineWords as word}
+          <span class='word'>{word}</span>
+        {/each}
+      </div>
+      <div class='line' transition:blur={{duration: 750, opacity: 25}}>
+        {#each bLineWords as word}
+          <span class='word'>{word}</span>
+        {/each}
+      </div>
+    {:else}
+      <div class='line'>
+        {#each aLineLetters as letter, i}
+          <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
+        {/each}
+      </div>
+      <div class='line'>
+        {#each bLineLetters as letter, i}
+          <span class='letter' class:concealed={bLineConcealedLetters.includes(i)}>{letter}</span>
+        {/each}
+      </div>
+    {/if}
   </div>
 </div>
 
