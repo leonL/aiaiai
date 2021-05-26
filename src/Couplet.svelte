@@ -1,7 +1,7 @@
 <script>
   import { onMount, createEventDispatcher, tick } from 'svelte';
   import { fade, crossfade, blur } from 'svelte/transition';
-  import { bounceInOut, backIn } from 'svelte/easing';
+  import { bounceInOut } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
   
   export let aLine;
@@ -46,7 +46,7 @@
   let showIamText = false;
   
   const dispatch = createEventDispatcher();
-  const [send, receive] = crossfade({delay: 100, duration: 4000, easing: backIn});
+  const [send, receive] = crossfade({duration: 4000 });
 
   $: if (!allLettersRevealed && (aLineConcealedLetters.length + bLineConcealedLetters.length === 0)) {
     allLettersRevealed = true;
@@ -99,7 +99,7 @@
   </div>
   {#if iAmCouplet}
     {#if wordOnPrecipice}
-     <div class='precipice'>
+      <div class='precipice'>
         <span class='falling-word' out:send={{key: fallingWordKey}} on:outroend={() => dangleNextWord()} >
           {fallingWordData.word}
         </span>
@@ -187,12 +187,13 @@
     opacity: 0;
     font-size: 1vw;
   }
+
   .precipice {
     position: fixed;
     top: 0;
+    bottom: 0;
     left: 0;
     right: 0;
-    bottom: 0;
 		display: flex;
 		align-items: center;
     justify-content: center;
@@ -200,7 +201,7 @@
     /* border: 1px solid orangered; */
 	}
   .falling-word {
-		font-size: 50vw;
+		font-size: 1000vw;
     /* border: 1px dotted black; */
 	}
 </style>
