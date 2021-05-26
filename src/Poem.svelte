@@ -19,7 +19,7 @@
 	<div class='aiwia'>
 		{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 			<div animate:flip={{duration: 500}}>
-				<Verse {verse}  />
+				<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
  			</div>
 		{/each}
 	</div>

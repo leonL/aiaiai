@@ -1,5 +1,5 @@
 <script>
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { onMount, createEventDispatcher, tick } from 'svelte';
   import { fade, crossfade, blur } from 'svelte/transition';
   import { bounceInOut } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
@@ -14,6 +14,8 @@
   export let coupletIndex;
   export let iAmCouplet = false;
 
+  let showPiSlice = false, showCountdown = false, coupletHeight, allLettersRevealed = false;
+
   let aLineWords = aLine.split(' '),
     aWordData = aLineWords.map((w, i) => ({word: w, line: 'a', lineIndex: i})),
     aLineFilteredWordData = aWordData,
@@ -22,32 +24,29 @@
     bLineFilteredWordData = bWordData,
     allWordData = [...aWordData, ...bWordData],
     allWordsCount = allWordData.length;
-
-  let showIamText = false;
-  $: if (iAmCouplet) { showIamText = true };
     
-  let wordMagOn = false, magWordIndex = 0;
+  let wordOnPrecipice = false, wordDropOn = false, wordOnPrecipiceIndex = 0;
   
-  $: magWordData = allWordData[magWordIndex];
-  $: magWordKey = magWordData.line + magWordData.lineIndex;
+  $: fallingWordData = allWordData[wordOnPrecipiceIndex];
+  $: fallingWordKey = fallingWordData.line + fallingWordData.lineIndex;
 
-  $: if (wordMagOn) {
-    if (magWordData.line === 'a') {
-      aLineFilteredWordData = aWordData.filter((_, i) => magWordData.lineIndex !== i );
+  $: if (wordOnPrecipice) {
+    if (fallingWordData.line === 'a') {
+      aLineFilteredWordData = aWordData.filter((_, i) => fallingWordData.lineIndex !== i );
       bLineFilteredWordData = bWordData;
     } else {
-      bLineFilteredWordData = bWordData.filter((_, i) => magWordData.lineIndex !== i );
+      bLineFilteredWordData = bWordData.filter((_, i) => fallingWordData.lineIndex !== i );
       aLineFilteredWordData = aWordData;
     } 
   } else {
     aLineFilteredWordData = aWordData;
     bLineFilteredWordData = bWordData;
   }
-  
-  let showPiSlice = false, showCountdown = false, coupletHeight, allLettersRevealed = false;
+
+  let showIamText = false;
   
   const dispatch = createEventDispatcher();
-  const [send, receive] = crossfade({duration: 10000});
+  const [send, receive] = crossfade({duration: 5000});
 
   $: if (!allLettersRevealed && (aLineConcealedLetters.length + bLineConcealedLetters.length === 0)) {
     allLettersRevealed = true;
@@ -64,14 +63,24 @@
     return millisecs;
   };
 
-  function magnifyNextWord() {
-    if (magWordIndex < allWordsCount - 1) {
-      magWordIndex = magWordIndex + 1;
-      wordMagOn = true;
-    } else if (magWordIndex === allWordsCount) {
-      wordMagOn = false;
-    }
-  }
+  function dangleNextWord() {
+    if (!wordDropOn) {
+      wordDropOn = true;
+      dropWord();
+    } else if (wordOnPrecipiceIndex < allWordsCount - 1 ) {
+      wordOnPrecipiceIndex++;
+      dropWord();
+    } else { // all words dropped
+      showIamText = true;
+      dispatch('verseSequenceComplete', true);
+    };
+  };
+
+  async function dropWord() {
+    wordOnPrecipice = true;
+    await tick();
+    wordOnPrecipice = false;
+  };
 
 </script>
 
@@ -89,28 +98,26 @@
     {/if}
   </div>
   {#if iAmCouplet}
-    <div class='magnifier'>
-      {#if wordMagOn}
-        <span id='magnified-word' in:receive={{key: magWordKey}} out:send={{key: magWordKey}}
-          on:introend={() => wordMagOn = false } on:outroend={() => magnifyNextWord()} >
-          {magWordData.word}
+    <div id='precipice'>
+      {#if wordOnPrecipice}
+        <span class='falling-word' out:send={{key: fallingWordKey}} on:outroend={() => dangleNextWord()} >
+          {fallingWordData.word}
         </span>
       {/if}
     </div>
-    <div class='distich' transition:blur={{duration: 1000, opacity: 10}} 
-      on:introend={() => wordMagOn = true }>
+    <div class='distich' transition:blur={{duration: 1000, opacity: 10}} on:introend={() => dangleNextWord() }>
       <div class='line'>
-        <span id='i-am' transition:fade={{ duration: (minsToMillisecs(5)), easing: bounceInOut}} 
-          on:introend={() => showIamText = false}>I am</span>
+        {#if showIamText}
+          <span id='i-am' transition:fade={{ duration: (minsToMillisecs(5)), easing: bounceInOut}} 
+            on:introend={() => showIamText = false}>I am</span>
+        {/if}
         {#each aLineFilteredWordData as wordData (wordData.lineIndex)}
-          <span class='word' out:send={{key: `a${wordData.lineIndex}`}}
-            in:receive={{key: `a${wordData.lineIndex}`}}>{wordData.word} </span>  
+          <span class='word' in:receive={{key: `a${wordData.lineIndex}`}}>{wordData.word} </span>
         {/each}
       </div>
       <div class='line'>
         {#each bLineFilteredWordData as wordData (wordData.lineIndex)}
-          <span class='word' out:send={{key: `b${wordData.lineIndex}`}}
-            in:receive={{key: `b${wordData.lineIndex}`}}>{wordData.word} </span>
+          <span class='word' in:receive={{key: `b${wordData.lineIndex}`}}>{wordData.word} </span>
         {/each}
       </div>
     </div>
@@ -180,15 +187,19 @@
     opacity: 0;
     font-size: 1vw;
   }
-  .magnifier {
+  #precipice {
     position: fixed;
-    top: 0px;
-    width: 100%;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 		display: flex;
 		align-items: center;
     justify-content: center;
+    /* border: 1px solid orangered; */
 	}
-  #magnified-word {
-		font-size: 100vw;
+  .falling-word {
+		font-size: 5000vw;
+    /* border: 1px dotted black; */
 	}
 </style>
