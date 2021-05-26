@@ -7,6 +7,7 @@
 	export let title;
 		
 	let activeVerseSpan = 1;
+
 	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
 </script>
 
@@ -18,8 +19,8 @@
 	<div class='aiwia'>
 		{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 			<div animate:flip={{duration: 500}}>
-				<Verse {verse} on:iAmCoupletMagnified={ (event) => activeVerseSpan++ } />
-			</div>
+				<Verse {verse}  />
+ 			</div>
 		{/each}
 	</div>
 </main>

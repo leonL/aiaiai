@@ -1,11 +1,11 @@
 <script>
   import Couplet from './Couplet.svelte';
-  import CoupletMagnifier from './CoupletMagnifier.svelte';
   
   export let verse;
   
   let countdown = 0, iAmCoupletIndex;
-  $: iAmCoupletRevealed = iAmCoupletIndex !== undefined;
+  
+  $: iAmCoupletConcealed = iAmCoupletIndex === undefined;
 
   function addLetterMetaDataToCouplet(couplet) {
     couplet.aLetters = couplet.a.split('');
@@ -53,11 +53,7 @@
   };
 
   function coupletRevealed(coupletIndex) {
-    let iAmCoupletConcealed = !iAmCoupletRevealed;
-    if (iAmCoupletConcealed) {
-      iAmCoupletIndex = coupletIndex;
-    }
-    return true;
+    if (iAmCoupletConcealed) iAmCoupletIndex = coupletIndex;
   };
 
   function getRandomInt(max, min = 0) {
@@ -71,7 +67,7 @@
     <Couplet aLine={couplet.a} bLine={couplet.b}  
       aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
-      piSlice={couplet.piSlice} coupletIndex={i} aiwia={ iAmCoupletRevealed && iAmCoupletIndex === i }
+      piSlice={couplet.piSlice} coupletIndex={i} aiwia={ !iAmCoupletConcealed && iAmCoupletIndex === i }
       on:countdownStep={ () => countdownToLetterFadeIn(i) }
       on:allLettersRevealed={ (event) => coupletRevealed(event.detail) } />
   {/each}
