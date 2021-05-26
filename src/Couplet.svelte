@@ -98,13 +98,13 @@
     {/if}
   </div>
   {#if iAmCouplet}
-    <div id='precipice'>
-      {#if wordOnPrecipice}
+    {#if wordOnPrecipice}
+     <div class='precipice'>
         <span class='falling-word' out:send={{key: fallingWordKey}} on:outroend={() => dangleNextWord()} >
           {fallingWordData.word}
         </span>
-      {/if}
-    </div>
+      </div>
+    {/if}
     <div class='distich' transition:blur={{duration: 1000, opacity: 10}} on:introend={() => dangleNextWord() }>
       <div class='line'>
         {#if showIamText}
@@ -187,19 +187,20 @@
     opacity: 0;
     font-size: 1vw;
   }
-  #precipice {
+  .precipice {
     position: fixed;
     top: 0;
-    bottom: 0;
     left: 0;
     right: 0;
+    bottom: 0;
 		display: flex;
 		align-items: center;
     justify-content: center;
     /* border: 1px solid orangered; */
+    overflow: hidden;
 	}
   .falling-word {
-		font-size: 5000vw;
+		font-size: 100vw;
     /* border: 1px dotted black; */
 	}
 </style>

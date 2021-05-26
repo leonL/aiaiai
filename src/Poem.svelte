@@ -15,30 +15,22 @@
   <title>{title}</title>
 </svelte:head>
 
-<main>
-	<div class='aiwia'>
-		{#each activeVersesInReverse as verse, i (verse.verseNumber)}
-			<div animate:flip={{duration: 500}}>
-				<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
- 			</div>
-		{/each}
-	</div>
+<main id='aiwia'>
+	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
+		<div animate:flip={{duration: 500}}>
+			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
+		</div>
+	{/each}
 </main>
 
 <style>
-	main {
-		height: 100%;
-		font-family: 'EB Garamond', serif;
-		display: flex;
-		flex-direction: column;
-	}
-	.aiwia {
-		font-size: 4vw;
-		flex-grow: 1;
+	#aiwia {
 		display: flex;
 		flex-direction: column-reverse;
 		height: 100%;
-		overflow-y: scroll;
+		font-size: 4vw;
 		padding: 0 10px;
+		font-family: 'EB Garamond', serif;
+		overflow-y: scroll;
 	}
 </style>
