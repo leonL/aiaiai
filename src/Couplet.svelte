@@ -1,7 +1,7 @@
 <script>
   import { onMount, createEventDispatcher, tick } from 'svelte';
   import { fade, crossfade, blur } from 'svelte/transition';
-  import { bounceInOut } from 'svelte/easing';
+  import { bounceInOut, backIn } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
   
   export let aLine;
@@ -46,7 +46,7 @@
   let showIamText = false;
   
   const dispatch = createEventDispatcher();
-  const [send, receive] = crossfade({duration: 5000});
+  const [send, receive] = crossfade({delay: 100, duration: 4000, easing: backIn});
 
   $: if (!allLettersRevealed && (aLineConcealedLetters.length + bLineConcealedLetters.length === 0)) {
     allLettersRevealed = true;
@@ -196,11 +196,11 @@
 		display: flex;
 		align-items: center;
     justify-content: center;
-    /* border: 1px solid orangered; */
     overflow: hidden;
+    /* border: 1px solid orangered; */
 	}
   .falling-word {
-		font-size: 100vw;
+		font-size: 50vw;
     /* border: 1px dotted black; */
 	}
 </style>
