@@ -67,7 +67,7 @@
     <Couplet aLine={couplet.a} bLine={couplet.b}  
       aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
-      piSlice={couplet.piSlice} coupletIndex={i} aiwia={ !iAmCoupletConcealed && iAmCoupletIndex === i }
+      piSlice={couplet.piSlice} coupletIndex={i} iAmCouplet={ !iAmCoupletConcealed && iAmCoupletIndex === i }
       on:countdownStep={ () => countdownToLetterFadeIn(i) }
       on:allLettersRevealed={ (event) => coupletRevealed(event.detail) } />
   {/each}

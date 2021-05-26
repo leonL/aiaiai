@@ -12,7 +12,7 @@
   export let bLineConcealedLetters;
   export let piSlice;
   export let coupletIndex;
-  export let aiwia = false;
+  export let iAmCouplet = false;
 
   let aLineWords = aLine.split(' '),
     aWordData = aLineWords.map((w, i) => ({word: w, line: 'a', lineIndex: i})),
@@ -23,8 +23,11 @@
     allWordData = [...aWordData, ...bWordData],
     allWordsCount = allWordData.length;
 
+  let showIamText = false;
+  $: if (iAmCouplet) { showIamText = true };
+    
   let wordMagOn = false, magWordIndex = 0;
-
+  
   $: magWordData = allWordData[magWordIndex];
   $: magWordKey = magWordData.line + magWordData.lineIndex;
 
@@ -85,7 +88,7 @@
       {piSlice}
     {/if}
   </div>
-  {#if aiwia}
+  {#if iAmCouplet}
     <div class='magnifier'>
       {#if wordMagOn}
         <span id='magnified-word' in:receive={{key: magWordKey}} out:send={{key: magWordKey}}
@@ -98,7 +101,7 @@
       on:introend={() => wordMagOn = true }>
       <div class='line'>
         <span id='i-am' transition:fade={{ duration: (minsToMillisecs(5)), easing: bounceInOut}} 
-          on:introend={() => aiwia = false}>I am</span>
+          on:introend={() => showIamText = false}>I am</span>
         {#each aLineFilteredWordData as wordData (wordData.lineIndex)}
           <span class='word' out:send={{key: `a${wordData.lineIndex}`}}
             in:receive={{key: `a${wordData.lineIndex}`}}>{wordData.word} </span>  
