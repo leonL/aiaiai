@@ -75,9 +75,6 @@
       on:countdownStep={ () => countdownToLetterFadeIn(i) }
       on:allLettersRevealed={ (event) => coupletRevealed(event.detail) } />
   {/each}
-  {#if iAmCoupletRevealed}
-    <CoupletMagnifier couplet={verse.couplets[iAmCoupletIndex]} on:iAmCoupletMagnified />
-  {/if}
 </div>
 
 <style>

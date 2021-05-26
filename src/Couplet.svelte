@@ -1,5 +1,5 @@
 <script>
-  import { onMount, beforeUpdate, createEventDispatcher } from 'svelte';
+  import { onMount, createEventDispatcher } from 'svelte';
   import { fade, crossfade, blur } from 'svelte/transition';
   import { bounceInOut } from 'svelte/easing';
   import CountdownLeader from './CountdownLeader.svelte';
@@ -14,18 +14,42 @@
   export let coupletIndex;
   export let aiwia = false;
 
-  let aLineWords = aLine.slice(' ');
-  let bLineWords = bLine.slice(' ');
+  let aLineWords = aLine.split(' '),
+    aWordData = aLineWords.map((w, i) => ({word: w, line: 'a', lineIndex: i})),
+    aLineFilteredWordData = aWordData,
+    bLineWords = bLine.split(' '),    
+    bWordData = bLineWords.map((w, i) => ({word: w, line: 'b', lineIndex: i})),
+    bLineFilteredWordData = bWordData,
+    allWordData = [...aWordData, ...bWordData],
+    allWordsCount = allWordData.length;
+
+  let wordMagOn = false, magWordIndex = 0;
+
+  $: magWordData = allWordData[magWordIndex];
+  $: magWordKey = magWordData.line + magWordData.lineIndex;
+
+  $: if (wordMagOn) {
+    if (magWordData.line === 'a') {
+      aLineFilteredWordData = aWordData.filter((_, i) => magWordData.lineIndex !== i );
+      bLineFilteredWordData = bWordData;
+    } else {
+      bLineFilteredWordData = bWordData.filter((_, i) => magWordData.lineIndex !== i );
+      aLineFilteredWordData = aWordData;
+    } 
+  } else {
+    aLineFilteredWordData = aWordData;
+    bLineFilteredWordData = bWordData;
+  }
   
-  let showPiSlice = false, showCountdown = false, coupletHeight;
+  let showPiSlice = false, showCountdown = false, coupletHeight, allLettersRevealed = false;
   
   const dispatch = createEventDispatcher();
-  const [send, receive] = crossfade({duration: 5000});
+  const [send, receive] = crossfade({duration: 10000});
 
-  beforeUpdate(() => {
-    let allLettersRevealed = aLineConcealedLetters.length + bLineConcealedLetters.length === 0;
-    if (allLettersRevealed) dispatch('allLettersRevealed', coupletIndex);
-  });
+  $: if (!allLettersRevealed && (aLineConcealedLetters.length + bLineConcealedLetters.length === 0)) {
+    allLettersRevealed = true;
+    dispatch('allLettersRevealed', coupletIndex);
+  };
 
   onMount(() => {
 		showCountdown = true;
@@ -36,6 +60,15 @@
     let millisecs = mins * oneMinuteInMilliseconds;
     return millisecs;
   };
+
+  function magnifyNextWord() {
+    if (magWordIndex < allWordsCount - 1) {
+      magWordIndex = magWordIndex + 1;
+      wordMagOn = true;
+    } else if (magWordIndex === allWordsCount) {
+      wordMagOn = false;
+    }
+  }
 
 </script>
 
@@ -52,21 +85,34 @@
       {piSlice}
     {/if}
   </div>
-  <div class='distich'>
-    {#if aiwia}
-      <div class='line' transition:blur={{duration: 750, opacity: 25}}>
+  {#if aiwia}
+    <div class='magnifier'>
+      {#if wordMagOn}
+        <span id='magnified-word' in:receive={{key: magWordKey}} out:send={{key: magWordKey}}
+          on:introend={() => wordMagOn = false } on:outroend={() => magnifyNextWord()} >
+          {magWordData.word}
+        </span>
+      {/if}
+    </div>
+    <div class='distich' transition:blur={{duration: 1000, opacity: 10}} 
+      on:introend={() => wordMagOn = true }>
+      <div class='line'>
         <span id='i-am' transition:fade={{ duration: (minsToMillisecs(5)), easing: bounceInOut}} 
           on:introend={() => aiwia = false}>I am</span>
-        {#each aLineWords as word}
-          <span class='word'>{word}</span>
+        {#each aLineFilteredWordData as wordData (wordData.lineIndex)}
+          <span class='word' out:send={{key: `a${wordData.lineIndex}`}}
+            in:receive={{key: `a${wordData.lineIndex}`}}>{wordData.word} </span>  
         {/each}
       </div>
-      <div class='line' transition:blur={{duration: 750, opacity: 25}}>
-        {#each bLineWords as word}
-          <span class='word'>{word}</span>
+      <div class='line'>
+        {#each bLineFilteredWordData as wordData (wordData.lineIndex)}
+          <span class='word' out:send={{key: `b${wordData.lineIndex}`}}
+            in:receive={{key: `b${wordData.lineIndex}`}}>{wordData.word} </span>
         {/each}
       </div>
-    {:else}
+    </div>
+  {:else}
+    <div class='distich'>
       <div class='line'>
         {#each aLineLetters as letter, i}
           <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
@@ -77,8 +123,8 @@
           <span class='letter' class:concealed={bLineConcealedLetters.includes(i)}>{letter}</span>
         {/each}
       </div>
-    {/if}
-  </div>
+    </div>
+  {/if}
 </div>
 
 <style>
@@ -131,4 +177,15 @@
     opacity: 0;
     font-size: 1vw;
   }
+  .magnifier {
+    position: fixed;
+    top: 0px;
+    width: 100%;
+		display: flex;
+		align-items: center;
+    justify-content: center;
+	}
+  #magnified-word {
+		font-size: 100vw;
+	}
 </style>
