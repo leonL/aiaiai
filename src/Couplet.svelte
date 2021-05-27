@@ -2,6 +2,7 @@
   import { onMount, createEventDispatcher, tick } from 'svelte';
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
+  import { getRandomInt, secsToMillisecs } from './helpers.js';
   
   export let aLineLetters;
   export let aLineConcealedLetters;
@@ -28,12 +29,6 @@
   onMount(() => {
 		showCountdown = true;
 	});
-
-  function minsToMillisecs(mins) {
-    const oneMinuteInMilliseconds = 60000;
-    let millisecs = mins * oneMinuteInMilliseconds;
-    return millisecs;
-  };
 </script>
 
 <div class='couplet' bind:clientHeight={coupletHeight} >
@@ -50,12 +45,16 @@
     {/if}
   </div>
   {#if showDistich}
-    <div class='distich' in:blur|local={{duration: minsToMillisecs(1), opacity: 10}}
+    <div class='distich' in:blur|local={{duration: secsToMillisecs(getRandomInt(120)), opacity: 10}}
       on:introend={() => { showIamText = false }}
       on:introstart={() => { dispatch('verseSequenceComplete') }}>
       <div class='line'>
         {#if showIamText}
-          <span class='i-am' out:fade|local={{duration: 1000}}>I am </span>
+          <span class='i-am' 
+            out:fade|local={{
+              delay: secsToMillisecs(getRandomInt(25)), 
+              duration: secsToMillisecs(getRandomInt(15)) 
+            }}>I am </span>
         {/if}
         {#each aLineLetters as letter, i}
           <span class='letter' class:concealed={aLineConcealedLetters.includes(i)}>{letter}</span>
