@@ -1,11 +1,11 @@
 <script>
   import Couplet from './Couplet.svelte';
+  import { getRandomInt } from './helpers.js';
   
   export let verse;
   
-  let countdown = 0, iAmCoupletIndex;
-  
-  $: iAmCoupletConcealed = iAmCoupletIndex === undefined;
+  const coupletCount = 3;
+  let countdown = 0, iAmCoupletIndex = getRandomInt(coupletCount - 1);
 
   function addLetterMetaDataToCouplet(couplet) {
     couplet.aLetters = couplet.a.split('');
@@ -52,23 +52,14 @@
     return concealedLines; 
   };
 
-  function coupletRevealed(coupletIndex) {
-    if (iAmCoupletConcealed) iAmCoupletIndex = coupletIndex;
-  };
-
-  function getRandomInt(max, min = 0) {
-    return Math.floor(Math.random() * (max - min + 1) + min);
-  };
-
 </script>
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
     <Couplet aLineLetters={couplet.aLetters} aLineConcealedLetters={couplet.aConcealedLetters}
       bLineLetters={couplet.bLetters} bLineConcealedLetters={couplet.bConcealedLetters}
-      piSlice={couplet.piSlice} coupletIndex={i} iAmCouplet={ !iAmCoupletConcealed && iAmCoupletIndex === i }
-      on:countdownStep={ () => countdownToLetterFadeIn(i) } on:verseSequenceComplete
-      on:allLettersRevealed={ (event) => coupletRevealed(event.detail) } />
+      piSlice={couplet.piSlice} coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i }
+      on:countdownStep={ () => countdownToLetterFadeIn(i) } on:verseSequenceComplete />
   {/each}
 </div>
 

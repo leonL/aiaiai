@@ -14,17 +14,15 @@
   let showPiSlice = false, showCountdown = false, showIamText = false,
     showDistich = true, coupletHeight, allLettersRevealed = false;
 
-  $: if (iAmCouplet) {
-    showIamText = true;
-    showDistich = false; // toggle showDistich in order to trigger blur transition on dom in;
-    showDistich = true;
-  }
-
   const dispatch = createEventDispatcher();
 
   $: if (!allLettersRevealed && (aLineConcealedLetters.length + bLineConcealedLetters.length === 0)) {
     allLettersRevealed = true;
-    dispatch('allLettersRevealed', coupletIndex);
+    if (iAmCouplet) {
+      showIamText = true;
+      showDistich = false; // toggle showDistich in order to trigger blur transition on dom in;
+      showDistich = true;
+    }
   };
 
   onMount(() => {
