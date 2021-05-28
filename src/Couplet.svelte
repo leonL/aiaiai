@@ -23,7 +23,6 @@
 
   onMount(() => {
     showCountdown = true;
-    console.log(coupletHeight);
 	});
 
   $: if (revealLetters) revealLettersAtRandom();
