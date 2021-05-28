@@ -12,16 +12,17 @@
   let doubleR, circumfrence;
   
   $: {
-    console.log($radius);
     doubleR = $radius * 2;
     circumfrence = doubleR * Math.PI;
   } 
 
-  onMount(async () => {
-    await radius.set(radiusMax);
-    dispatch('leaderDilated', true);
-    await fillPercent.set(0);
-    dispatch('leaderWiped', true);
+  onMount(() => {
+    radius.set(radiusMax).then(() => {
+      dispatch('leaderDilated', true);
+      fillPercent.set(0).then(() => {
+        dispatch('leaderWiped', true);
+      });
+    })
 	});
 
 </script>
