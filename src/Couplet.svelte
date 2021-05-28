@@ -12,8 +12,7 @@
   export let iAmCouplet = false;
   export let revealLetters;
 
-  let showCountdown = false, showPiSlice = false, showIamText = false,
-    showDistich = true, coupletHeight, lettersTransitionedCount = 0;
+  let showCountdown = false, showPiSlice = false, renderAsLetters = true, coupletHeight;
 
   onMount(() => {
 		showCountdown = true;
@@ -21,11 +20,11 @@
 
   $: if (revealLetters) revealLettersAtRandom();
 
-  let letters = {a: aLine.split(''), b: bLine.split('')},
-    lettersCount = letters.a.length + letters.b.length, 
+  let letters = {a: aLine.split(''), b: bLine.split('')}, 
     aConcealedLetters = Array.from(letters.a, (_, i) => i),  
     bConcealedLetters = Array.from(letters.b, (_, i) => i),
-    concealedLetters = {a: aConcealedLetters, b: bConcealedLetters};
+    concealedLetters = {a: aConcealedLetters, b: bConcealedLetters},
+    revealedLetters = {a: [], b: []};
 
   function revealLettersAtRandom() {
     let revealLettersInterval = setInterval(() => {
@@ -33,9 +32,9 @@
       let revealLineId = getConcealedLineId();
       
       if (revealLineId) { 
-        let id = revealLineId, indexOfLetterId = getRandomInt(concealedLetters[id].length - 1);
-        concealedLetters[id].splice(indexOfLetterId, 1);
-        concealedLetters = concealedLetters; 
+        let id = revealLineId, concealedLetterIdIndex = getRandomInt(concealedLetters[id].length - 1),
+          concealedLetterId = concealedLetters[id].splice(concealedLetterIdIndex, 1);
+        revealedLetters[id] = [...revealedLetters[id], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
       };
@@ -56,17 +55,35 @@
     return concealedLineId;
   };
 
-  function afterLetterTransition() {
-    lettersTransitionedCount++;
-    if ((lettersTransitionedCount === lettersCount * 2) && iAmCouplet) {
-      showIamText = true;
-      showDistich = false; // toggle showDistich in order to trigger blur transition on dom in;
-      showDistich = true;
+  const lettersCount = letters.a.length + letters.b.length,
+    doubleLettersCount = lettersCount * 2;
+
+  let letterCssTransitionCount = 0,  showIamText = false;
+
+  function onLetterCssTransition() {
+    letterCssTransitionCount++;
+    if (letterCssTransitionCount >= doubleLettersCount) {
+      if (iAmCouplet) showIamText = true;
+      renderAsLetters = false;
     }
+  };
+
+  function getBlurInOptions() {
+    let options = {delay: 0, duration: 0, opacity: 100};
+    if (iAmCouplet) options = {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
+    return options; 
+  };
+
+  function blurIntroStart() {
+    if (iAmCouplet) dispatch('verseSequenceComplete', true);
+  };
+
+  function blurIntroEnd() {
+    if (iAmCouplet && showIamText) showIamText = false;
   };
 </script>
 
-<div class='couplet' bind:clientHeight={coupletHeight} >
+<div class='distich' bind:clientHeight={coupletHeight} >
   <div class='pi-slice'>
     {#if showCountdown}
       <div class='countdown-leader'>
@@ -79,35 +96,42 @@
       {piSlice}
     {/if}
   </div>
-  {#if showDistich}
-    <div class='distich' in:blur|local={{duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10}}
-      on:introend={() => { showIamText = false }}
-      on:introstart={() => { dispatch('verseSequenceComplete') }}>
+  {#if renderAsLetters}
+    <div class='couplet'>
       <div class='line'>
-        {#if showIamText}
-          <span class='i-am' 
-            out:fade|local={{
-              delay: secsToMillisecs(getRandomInt(25)), 
-              duration: secsToMillisecs(getRandomInt(15, 1)) 
-            }}>I am </span>
-        {/if}
         {#each letters.a as letter, i}
-          <span class:concealed={concealedLetters.a.includes(i)}
-            class='letter' on:transitionend={_ => afterLetterTransition()}>{letter}</span>
+          <span class:revealed={revealedLetters.a.includes(i)}
+            class='letter' on:transitionend={_ => onLetterCssTransition()}>{letter}</span>
         {/each}
       </div>
       <div class='line'>
         {#each letters.b as letter, i}
-          <span class:concealed={concealedLetters.b.includes(i)}
-            class='letter' on:transitionend={_ => afterLetterTransition()}>{letter}</span>
+          <span class:revealed={revealedLetters.b.includes(i)}
+            class='letter' on:transitionend={_ => onLetterCssTransition()}>{letter}</span>
         {/each}
+      </div>
+    </div>
+  {:else}
+    <div class='couplet' in:blur|local={getBlurInOptions()} 
+      on:introstart={() => blurIntroStart()} on:introend={() => { blurIntroEnd() }}>
+      <div class='line'>
+        {#if showIamText}
+          <span out:fade|local={{
+              delay: secsToMillisecs(getRandomInt(25)), 
+              duration: secsToMillisecs(getRandomInt(15, 1)) 
+            }} class='i-am'>I am </span>
+        {/if}
+        {aLine}
+      </div>
+      <div class='line'>
+        {bLine}
       </div>
     </div>
   {/if}
 </div>
 
 <style>
-  .couplet {
+  .distich {
     margin: 5px 0;
     flex-grow: 1;
     display: flex;
@@ -138,19 +162,20 @@
     justify-content: center;
     /* border: 1px solid orange; */
   }
-  .distich {
+  .couplet {
     flex-grow: 1;
     font-size: 4vw;
     /* border: 1px dashed red; */
   }
   .letter { 
-    opacity: 100;
+    opacity: 0;
+    font-size: 1vw;
     transition-property: opacity, font-size;
     transition-duration: 5s;
     transition-timing-function: ease-in; 
   }
-  .letter.concealed {
-    opacity: 0;
-    font-size: 1vw;
+  .letter.revealed {
+    opacity: 100;
+    font-size: 4vw;
   }
 </style>
