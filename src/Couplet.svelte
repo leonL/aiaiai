@@ -15,9 +15,10 @@
   export let iAmCouplet = false;
   export let revealLetters;
 
-  let showPiSlice = false, renderAsLetters = true, coupletHeight;
+  let showLeader = true, showPiSlice = false, coupletHeight;
+  $: halfCoupletHeight = Math.round(coupletHeight / 2);
 
-  $: halfElHeight = Math.round(coupletHeight / 2);
+  let renderAsLetters = true;
 
   $: if (revealLetters) revealLettersAtRandom();
 
@@ -113,11 +114,11 @@
 
 <div class='distich' bind:clientHeight={coupletHeight} >
   <div class='pi-slice'>
-    {#if halfElHeight && halfElHeight !== 0}
+    {#if showLeader && halfCoupletHeight && halfCoupletHeight !== 0}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={halfElHeight} delayFactor={coupletIndex}
+        <CountdownLeader radiusMax={halfCoupletHeight} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
-          on:leaderWiped= { () => { dispatch('countdownStep', true) } } />
+          on:leaderWiped= { () => { showLeader = false; dispatch('countdownStep', true) } } />
       </div>
     {/if}
     {#if showPiSlice}
