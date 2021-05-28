@@ -1,6 +1,7 @@
 <script>
 	import { flip } from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
+	import { setContext } from 'svelte';
 
 	import Verse from './Verse.svelte';
 
@@ -9,6 +10,15 @@
 	let activeVerseSpan = 1;
 
 	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
+
+	const geoLocationPromise = new Promise((resolve, reject) => {
+		navigator.geolocation.getCurrentPosition(pos => {
+			let coordinates = pos.coords;
+			resolve(coordinates);
+		});
+	});	
+
+	setContext('deviceCoordinates', geoLocationPromise);
 </script>
 
 <svelte:head>

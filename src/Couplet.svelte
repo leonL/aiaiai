@@ -1,5 +1,5 @@
 <script>
-  import { onMount, createEventDispatcher, afterUpdate } from 'svelte';
+  import { getContext, createEventDispatcher } from 'svelte';
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
   import { getRandomInt, secsToMillisecs, haversine_distance } from './helpers.js';
@@ -15,11 +15,7 @@
   export let iAmCouplet = false;
   export let revealLetters;
 
-  let showCountdown = false, showPiSlice = false, renderAsLetters = true, coupletHeight, distanceFromLocale;
-
-  navigator.geolocation.getCurrentPosition(pos => {
-    distanceFromLocale = haversine_distance(pos.coords, correspondingLocaleData) * 1000;
-  });
+  let showPiSlice = false, renderAsLetters = true, coupletHeight;
 
   $: halfElHeight = Math.round(coupletHeight / 2);
 
@@ -105,9 +101,12 @@
     if (iAmCouplet && showIamText) showIamText = false;
   };
 
-  function nearbyCorrespondingLocale(meters = 50) {
-    let nearby = false;
-    if (distanceFromLocale <= meters) nearby = true;
+  let coordinatesPromise = getContext('deviceCoordinates');
+
+  function nearbyCorrespondingLocale(deviceCoords, meters = 50) {  
+    let metersFromLocale = haversine_distance(deviceCoords, correspondingLocaleData) * 1000,
+      nearby = false;
+    if (metersFromLocale <= meters) nearby = true;
     return nearby; 
   };
 </script>
@@ -146,7 +145,7 @@
       <div class='line'>
         {#if showIamText}
           <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), duration: secsToMillisecs(getRandomInt(15, 1)) }} 
-            class='i-am'>{#if nearbyCorrespondingLocale()}Here {/if}I am </span>
+            class='i-am'>{#await coordinatesPromise then coords}{#if nearbyCorrespondingLocale(coords)}Here {/if}{/await}I am </span>        
         {/if}
         {aLine}
       </div>
