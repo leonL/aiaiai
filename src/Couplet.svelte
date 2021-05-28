@@ -21,11 +21,7 @@
     distanceFromLocale = haversine_distance(pos.coords, correspondingLocaleData) * 1000;
   });
 
-  $: leaderMaxRadius = Math.round(coupletHeight / 2);
-
-  onMount(() => {
-    showCountdown = true;
-	});
+  $: halfElHeight = Math.round(coupletHeight / 2);
 
   $: if (revealLetters) revealLettersAtRandom();
 
@@ -118,11 +114,11 @@
 
 <div class='distich' bind:clientHeight={coupletHeight} >
   <div class='pi-slice'>
-    {#if showCountdown && leaderMaxRadius !== 0}
+    {#if halfElHeight && halfElHeight !== 0}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={leaderMaxRadius} delayFactor={coupletIndex}
+        <CountdownLeader radiusMax={halfElHeight} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
-          on:leaderWiped= { () => { showCountdown = false; dispatch('countdownStep', true) } } />
+          on:leaderWiped= { () => { dispatch('countdownStep', true) } } />
       </div>
     {/if}
     {#if showPiSlice}
