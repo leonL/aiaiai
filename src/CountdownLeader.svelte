@@ -17,6 +17,7 @@
   } 
 
   onMount(() => {
+    console.log(radiusMax);
     radius.set(radiusMax).then(() => {
       dispatch('leaderDilated', true);
       fillPercent.set(0).then(() => {
