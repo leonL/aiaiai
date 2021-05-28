@@ -198,7 +198,7 @@
   }
 
   .line {
-    min-height: 5.2vw;
+    min-height: 6vw;
     /* border: 1px solid green; */
   }
 </style>
