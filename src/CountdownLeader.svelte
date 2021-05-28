@@ -5,33 +5,33 @@
 
   export let radiusMax;
   export let delayFactor;
-
-  const fillPercentStore = tweened(100, {duration: 3000}),
-      radiusStore = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
-    doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
-    dispatch = createEventDispatcher();
+  
+  const  doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
+    dispatch = createEventDispatcher(), 
+    radius = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
+    fillPercent = tweened(100, {duration: 3000})
 
   let doubleR, circumfrence;
   
   $: {
-    doubleR = $radiusStore * 2;
+    doubleR = $radius * 2;
     circumfrence = doubleR * Math.PI;
   } 
 
   onMount(async () => {
-    await radiusStore.set(radiusMax);
+    await radius.set(radiusMax);
     dispatch('leaderDilated', true);
-    await fillPercentStore.set(0);
+    await fillPercent.set(0);
     dispatch('leaderWiped', true);
 	});
 
 </script>
 
 <svg class='leader' width={quadrupleRadMax} height={quadrupleRadMax} viewBox="0 0 {quadrupleRadMax} {quadrupleRadMax}">
-  <circle r={$radiusStore} cx={doubleRadMax} cy={doubleRadMax} fill="transparent" 
+  <circle r={$radius} cx={doubleRadMax} cy={doubleRadMax} fill="transparent" 
     stroke="black"
     stroke-width={doubleR}
-    stroke-dasharray="{$fillPercentStore * circumfrence/100} {circumfrence}"
+    stroke-dasharray="{$fillPercent * circumfrence/100} {circumfrence}"
     transform="rotate(-90, {doubleRadMax}, {doubleRadMax}) translate(0, {quadrupleRadMax}) scale(1,-1)"
   />
 </svg>
