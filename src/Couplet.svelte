@@ -23,6 +23,7 @@
 
   onMount(() => {
     showCountdown = true;
+    console.log(coupletHeight);
 	});
 
   $: if (revealLetters) revealLettersAtRandom();
@@ -118,7 +119,7 @@
   <div class='pi-slice'>
     {#if showCountdown}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={coupletHeight / Math.PI} delayFactor={coupletIndex}
+        <CountdownLeader radiusMax={coupletHeight / 3} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
           on:leaderWiped= { () => { showCountdown = false; dispatch('countdownStep', true) } } />
       </div>
@@ -199,6 +200,6 @@
 
   .line {
     min-height: 4vw;
-    border: 1px solid green;
+    /* border: 1px solid green; */
   }
 </style>
