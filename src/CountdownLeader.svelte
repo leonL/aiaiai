@@ -9,7 +9,7 @@
   const  doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
     dispatch = createEventDispatcher(), 
     radius = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
-    fillPercent = tweened(100, {duration: 3000})
+    fillPercent = tweened(100, {duration: 3000});
 
   let doubleR, circumfrence;
   
