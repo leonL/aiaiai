@@ -5,11 +5,10 @@
 
   export let radiusMax;
   export let delayFactor;
-  
-  const  doubleRadMax = radiusMax * 2, quadrupleRadMax = radiusMax * 4,
-    dispatch = createEventDispatcher(), 
+
+  const fillPercent = tweened(100, {duration: 3000, delay: 100}),
     radius = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
-    fillPercent = tweened(100, {duration: 3000});
+    dispatch = createEventDispatcher();
 
   let doubleR, circumfrence;
   
@@ -19,19 +18,22 @@
   } 
 
   onMount(async () => {
+    console.log('mount');
     await radius.set(radiusMax);
+    console.log('fill complete');
     dispatch('leaderDilated', true);
     await fillPercent.set(0);
+    console.log('wipe complete');
     dispatch('leaderWiped', true);
 	});
 
 </script>
 
-<svg class='leader' width={quadrupleRadMax} height={quadrupleRadMax} viewBox="0 0 {quadrupleRadMax} {quadrupleRadMax}">
-  <circle r={$radius} cx={doubleRadMax} cy={doubleRadMax} fill="transparent" 
+<svg class='leader' width={radiusMax * 4} height={radiusMax * 4} viewBox="0 0 {radiusMax * 4} {radiusMax * 4}">
+  <circle r={$radius} cx={radiusMax * 2} cy={radiusMax * 2} fill="transparent" 
     stroke="black"
     stroke-width={doubleR}
     stroke-dasharray="{$fillPercent * circumfrence/100} {circumfrence}"
-    transform="rotate(-90, {doubleRadMax}, {doubleRadMax}) translate(0, {quadrupleRadMax}) scale(1,-1)"
+    transform="rotate(-90, {radiusMax * 2}, {radiusMax * 2}) translate(0, {radiusMax * 4}) scale(1,-1)"
   />
 </svg>
