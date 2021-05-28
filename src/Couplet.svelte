@@ -2,20 +2,25 @@
   import { onMount, createEventDispatcher, afterUpdate } from 'svelte';
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
-  import { getRandomInt, secsToMillisecs } from './helpers.js';
+  import { getRandomInt, secsToMillisecs, haversine_distance } from './helpers.js';
   const dispatch = createEventDispatcher();
   
   export let aLine;
   export let bLine;
   export let piSlice;
+  export let correspondingLocaleData;
   export let coupletIndex;
   export let iAmCouplet = false;
   export let revealLetters;
 
-  let showCountdown = false, showPiSlice = false, renderAsLetters = true, coupletHeight;
+  let showCountdown = false, showPiSlice = false, renderAsLetters = true, coupletHeight, distanceFromLocale;
+
+  navigator.geolocation.getCurrentPosition(pos => {
+    distanceFromLocale = haversine_distance(pos.coords, correspondingLocaleData) * 1000;
+  });
 
   onMount(() => {
-		showCountdown = true;
+    showCountdown = true;
 	});
 
   $: if (revealLetters) revealLettersAtRandom();
@@ -81,6 +86,12 @@
   function blurIntroEnd() {
     if (iAmCouplet && showIamText) showIamText = false;
   };
+
+  function nearbyCorrespondingLocale(meters = 100) {
+    let nearby = false;
+    if (distanceFromLocale <= meters) nearby = true;
+    return nearby; 
+  };
 </script>
 
 <div class='distich' bind:clientHeight={coupletHeight} >
@@ -116,10 +127,8 @@
       on:introstart={() => blurIntroStart()} on:introend={() => { blurIntroEnd() }}>
       <div class='line'>
         {#if showIamText}
-          <span out:fade|local={{
-              delay: secsToMillisecs(getRandomInt(25)), 
-              duration: secsToMillisecs(getRandomInt(15, 1)) 
-            }} class='i-am'>I am </span>
+          <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), duration: secsToMillisecs(getRandomInt(15, 1)) }} 
+            class='i-am'>{#if nearbyCorrespondingLocale()}Here {/if}I am </span>
         {/if}
         {aLine}
       </div>

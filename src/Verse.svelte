@@ -1,6 +1,7 @@
 <script>
   import Couplet from './Couplet.svelte';
   import { getRandomInt } from './helpers.js';
+  import junctionLocales from './data/junctionLocales.js';
   
   export let verse;
   
@@ -13,12 +14,18 @@
     if (++countdown === coupletCount) revealLetters = true;
   };
 
+  function getJunctionLocaleDataById(id) {
+    let locale = junctionLocales.find(l => l.id == id ); 
+    return locale;
+  }
+
 </script>
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
     <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
       coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
+      correspondingLocaleData={getJunctionLocaleDataById(couplet.piSlice)}
       on:countdownStep={ () => countdownToLetterReveal(i) } 
       on:verseSequenceComplete />
   {/each}
