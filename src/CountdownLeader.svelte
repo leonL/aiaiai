@@ -27,11 +27,11 @@
 
 </script>
 
-<svg class='leader' width={radiusMax * 4} height={radiusMax * 4} viewBox="0 0 {radiusMax * 4} {radiusMax * 4}">
-  <circle r={$radiusStore} cx={radiusMax * 2} cy={radiusMax * 2} fill="transparent" 
+<svg class='leader' width={quadrupleRadMax} height={quadrupleRadMax} viewBox="0 0 {quadrupleRadMax} {quadrupleRadMax}">
+  <circle r={$radiusStore} cx={doubleRadMax} cy={doubleRadMax} fill="transparent" 
     stroke="black"
     stroke-width={doubleR}
     stroke-dasharray="{$fillPercentStore * circumfrence/100} {circumfrence}"
-    transform="rotate(-90, {radiusMax * 2}, {radiusMax * 2}) translate(0, {radiusMax * 4}) scale(1,-1)"
+    transform="rotate(-90, {doubleRadMax}, {doubleRadMax}) translate(0, {quadrupleRadMax}) scale(1,-1)"
   />
 </svg>
