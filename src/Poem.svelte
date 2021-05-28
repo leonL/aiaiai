@@ -1,5 +1,5 @@
 <script>
-	import {flip} from 'svelte/animate';
+	import { flip } from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
 
 	import Verse from './Verse.svelte';

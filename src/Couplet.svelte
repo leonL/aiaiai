@@ -3,6 +3,8 @@
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
   import { getRandomInt, secsToMillisecs, haversine_distance } from './helpers.js';
+  import { quadOut } from 'svelte/easing';
+
   const dispatch = createEventDispatcher();
   
   export let aLine;
@@ -25,11 +27,21 @@
 
   $: if (revealLetters) revealLettersAtRandom();
 
-  let letters = {a: aLine.split(''), b: bLine.split('')}, 
-    aConcealedLetters = Array.from(letters.a, (_, i) => i),  
-    bConcealedLetters = Array.from(letters.b, (_, i) => i),
-    concealedLetters = {a: aConcealedLetters, b: bConcealedLetters},
-    revealedLetters = {a: [], b: []};
+  let letters = {a: aLine.split(''), b: bLine.split('')},
+    aLettersWithIds = letters.a.map((l, i) => ( {id: i, letter: l} )),
+    bLettersWithIds = letters.b.map((l, i) => ( {id: i, letter: l} )),
+    lettersWithIds = {a: aLettersWithIds, b: bLettersWithIds};
+
+  let aConcealedLetterIds = Array.from(letters.a, (_, i) => i),
+    bConcealedLetterIds = Array.from(letters.b, (_, i) => i),
+    concealedLetterIds = {a: aConcealedLetterIds, b: bConcealedLetterIds},
+    revealedLetterIds = {a: [], b: []},
+    revealedLettersWithIds = {a: [], b: []};
+
+  $: {
+    revealedLettersWithIds.a = lettersWithIds.a.filter((_, i) => revealedLetterIds.a.includes(i));
+    revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
+  }
 
   function revealLettersAtRandom() {
     let revealLettersInterval = setInterval(() => {
@@ -37,20 +49,20 @@
       let revealLineId = getConcealedLineId();
       
       if (revealLineId) { 
-        let id = revealLineId, concealedLetterIdIndex = getRandomInt(concealedLetters[id].length - 1),
-          concealedLetterId = concealedLetters[id].splice(concealedLetterIdIndex, 1);
-        revealedLetters[id] = [...revealedLetters[id], ...concealedLetterId];
+        let lineId = revealLineId, concealedLetterIdIndex = getRandomInt(concealedLetterIds[lineId].length - 1),
+          concealedLetterId = concealedLetterIds[lineId].splice(concealedLetterIdIndex, 1);
+        revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
       };
-    }, getRandomInt(400, 200));
+    }, iAmCouplet ? 100 : (100 * getRandomInt(6, 3)));
   };
 
   function getConcealedLineId() {
     let concealedLineIds = [], concealedLineId = false;
 
-    if (concealedLetters.a.length > 0) concealedLineIds.push('a');
-    if (concealedLetters.b.length > 0) concealedLineIds.push('b');
+    if (concealedLetterIds.a.length > 0) concealedLineIds.push('a');
+    if (concealedLetterIds.b.length > 0) concealedLineIds.push('b');
 
     if (concealedLineIds.length === 2) {
       concealedLineId = concealedLineIds[getRandomInt(1)];
@@ -60,14 +72,22 @@
     return concealedLineId;
   };
 
-  const lettersCount = letters.a.length + letters.b.length,
-    doubleLettersCount = lettersCount * 2;
+  function sproutLetter(node, params) {
+		return {
+			delay: params.delay || 0,
+			duration: params.duration || secsToMillisecs(10),
+			easing: params.easing || quadOut,
+			css: (t, _) => `font-size: ${t * 100}%; opacity: ${t}`
+		};
+	};
 
-  let letterCssTransitionCount = 0,  showIamText = false;
+  const lettersCount = letters.a.length + letters.b.length;
 
-  function onLetterCssTransition() {
-    letterCssTransitionCount++;
-    if (letterCssTransitionCount >= doubleLettersCount) {
+  let lettersSproutedCount = 0,  showIamText = false;
+
+  function letterSprouted() {
+    lettersSproutedCount++;
+    if (lettersSproutedCount >= lettersCount) {
       if (iAmCouplet) showIamText = true;
       renderAsLetters = false;
     }
@@ -87,7 +107,7 @@
     if (iAmCouplet && showIamText) showIamText = false;
   };
 
-  function nearbyCorrespondingLocale(meters = 100) {
+  function nearbyCorrespondingLocale(meters = 50) {
     let nearby = false;
     if (distanceFromLocale <= meters) nearby = true;
     return nearby; 
@@ -110,21 +130,21 @@
   {#if renderAsLetters}
     <div class='couplet'>
       <div class='line'>
-        {#each letters.a as letter, i}
-          <span class:revealed={revealedLetters.a.includes(i)}
-            class='letter' on:transitionend={_ => onLetterCssTransition()}>{letter}</span>
+        {#each revealedLettersWithIds.a as letterData (letterData.id)}
+          <span in:sproutLetter|local on:introend={() => letterSprouted() }
+            class='letter'>{letterData.letter}</span>
         {/each}
       </div>
       <div class='line'>
-        {#each letters.b as letter, i}
-          <span class:revealed={revealedLetters.b.includes(i)}
-            class='letter' on:transitionend={_ => onLetterCssTransition()}>{letter}</span>
+        {#each revealedLettersWithIds.b as letterData (letterData.id)}
+          <span in:sproutLetter|local on:introend={() => letterSprouted() }
+            class='letter'>{letterData.letter}</span>
         {/each}
       </div>
     </div>
   {:else}
     <div class='couplet' in:blur|local={getBlurInOptions()} 
-      on:introstart={() => blurIntroStart()} on:introend={() => { blurIntroEnd() }}>
+      on:introstart={() => blurIntroStart()} on:introend={() => blurIntroEnd() }>
       <div class='line'>
         {#if showIamText}
           <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), duration: secsToMillisecs(getRandomInt(15, 1)) }} 
@@ -176,15 +196,9 @@
     font-size: 4vw;
     /* border: 1px dashed red; */
   }
-  .letter { 
-    opacity: 0;
-    font-size: 1vw;
-    transition-property: opacity, font-size;
-    transition-duration: 5s;
-    transition-timing-function: ease-in; 
-  }
-  .letter.revealed {
-    opacity: 100;
-    font-size: 4vw;
+
+  .line {
+    min-height: 5vw;
+    /* border: 1px solid green; */
   }
 </style>
