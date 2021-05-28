@@ -118,7 +118,7 @@
   <div class='pi-slice'>
     {#if showCountdown}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={Math.round(coupletHeight / 3)} delayFactor={coupletIndex}
+        <CountdownLeader radiusMax={Math.round(coupletHeight / 2)} delayFactor={coupletIndex}
           on:leaderDilated= { () => { showPiSlice = true; } }
           on:leaderWiped= { () => { showCountdown = false; dispatch('countdownStep', true) } } />
       </div>

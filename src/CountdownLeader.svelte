@@ -1,29 +1,26 @@
 <script>
   import { tweened } from 'svelte/motion';
   import { onMount, createEventDispatcher } from 'svelte';
-  import { backIn } from 'svelte/easing';
 
   export let radiusMax;
   export let delayFactor;
 
   const fillPercent = tweened(100, {duration: 3000, delay: 100}),
-    radius = tweened(2, {delay: (2500 * delayFactor), duration: 3000, easing: backIn}),
+    radius = tweened(2, {delay: (2500 * delayFactor), duration: 3000}),
     dispatch = createEventDispatcher();
 
   let doubleR, circumfrence;
   
   $: {
+    console.log($radius);
     doubleR = $radius * 2;
     circumfrence = doubleR * Math.PI;
   } 
 
   onMount(async () => {
-    console.log('mount');
     await radius.set(radiusMax);
-    console.log('fill complete');
     dispatch('leaderDilated', true);
     await fillPercent.set(0);
-    console.log('wipe complete');
     dispatch('leaderWiped', true);
 	});
 
