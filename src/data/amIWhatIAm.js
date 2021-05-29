@@ -84,8 +84,8 @@ const amIWhatIAm = [
     couplets: [
       {
         piSlice: 5,
-        a: "amid the silent, blue warmth enclosing our rank",
-        b: "a single faggot unable to kindle the consuming pyre" 
+        a: "the silent, blue warmth enclosing our rank",
+        b: "of faggots unable to kindle the consuming pyre" 
       },
       {
         piSlice: 8,
