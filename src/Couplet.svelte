@@ -14,6 +14,7 @@
   export let iAmCouplet = false;
   export let revealLetters;
   export let iAmAllOverride;
+  export let iAmHereOverride;
 
   let showLeader = true, showPiSlice = false, coupletHeight;
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
@@ -71,13 +72,20 @@
   };
 
   function obscureTextOptions(isNearbyLocale) {
-    let options = isNearbyLocale ? {delay: 0, duration: 0, opacity: 100} : 
+    let overrule = isNearbyLocale || iAmHereOverride;
+    let options = overrule ? {delay: 0, duration: 0, opacity: 100} : 
       {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
     return options; 
   };
 
-  let iAmIsCycling = false;
+  let iAmIsCycling = false, isHeneni = false;
   $: isShekhinah = piSlice === 0;
+  
+  $: if (isShekhinah) {
+    isNearbyLocale.then(nearby => {
+      if (nearby) isHeneni = true;
+    });
+  };
 
   function obscureTextStart() {
     iAmIsCycling = true;
@@ -85,6 +93,7 @@
     if (!iAmAllOverride) {
       if (iAmCouplet && isShekhinah) {
         dispatch('iAmAll', true);
+        if (isHeneni) dispatch('iAmHere', true);
       } else if (iAmCouplet) {
         dispatch('verseSequenceComplete', true);
       };
@@ -92,11 +101,12 @@
   };
 
   function obscureTextEnd(isNearbyLocale) {
-    if (!isNearbyLocale) showIamText = false;
+    if (!isNearbyLocale || !iAmHereOverride) showIamText = false; // unless (isNearByLocal || iAmHereOverride) 
   };
 
   function iAmForgotten() {
     iAmIsCycling = false;
+    if (iAmHereOverride) showIamText = true;
     // console.log(`${verseNumber}-${coupletIndex}: iAmCycle END`);
   };
 
@@ -173,7 +183,7 @@
         <div class='line'>
           {#if showIamText}
             <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
-              {#if isNearby}<span>Here </span>{/if}
+              {#if isNearby  || iAmHereOverride}<span>Here </span>{/if}
               I am </span>        
           {/if}
           {aLine}

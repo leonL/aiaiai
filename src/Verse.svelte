@@ -5,6 +5,7 @@
   
   export let verse;
   export let iAmAllOverride;
+  export let iAmHereOverride;
   
   const coupletCount = 3;
 
@@ -28,7 +29,8 @@
       coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
       correspondingLocaleData={getJunctionLocaleDataById(couplet.piSlice)}
       on:countdownStep={ () => countdownToLetterReveal(i) } 
-      on:verseSequenceComplete on:iAmAll {iAmAllOverride} />
+      on:verseSequenceComplete on:iAmAll on:iAmHere
+      {iAmAllOverride} {iAmHereOverride} />
   {/each}
 </div>
 
