@@ -70,9 +70,9 @@
     return concealedLineId;
   };
 
-  function getBlurInOptions() {
+  function getBlurInOptions(isNearbyLocale) {
     let options = {delay: 0, duration: 0, opacity: 100};
-    if (iAmCouplet) options = {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
+    if (iAmCouplet && !isNearbyLocale) options = {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
     return options; 
   };
 
@@ -80,11 +80,15 @@
     if (iAmCouplet) dispatch('verseSequenceComplete', true);
   };
 
-  function blurIntroEnd() {
-    if (iAmCouplet && showIamText) showIamText = false;
+  function blurIntroEnd(isNearbyLocale) {
+    if (!isNearbyLocale && iAmCouplet && showIamText) showIamText = false;
   };
 
-  let coordinatesPromise = getContext('deviceCoordinates');
+  const isNearbyLocale = new Promise(async (resolve, reject) => {
+    getContext('deviceCoordinates').then(coords => {
+      resolve(nearbyCorrespondingLocale(coords));
+    });
+	});	
 
   function nearbyCorrespondingLocale(deviceCoords, meters = 50) {  
     let metersFromLocale = haversine_distance(deviceCoords, correspondingLocaleData) * 1000,
@@ -121,19 +125,25 @@
       </div>
     </div>
   {:else}
-    <div class='couplet' in:blur|local={getBlurInOptions()} 
-      on:introstart={() => blurIntroStart()} on:introend={() => blurIntroEnd() }>
-      <div class='line'>
-        {#if showIamText}
-          <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), duration: secsToMillisecs(getRandomInt(15, 1)) }} 
-            class='i-am'>{#await coordinatesPromise then coords}{#if nearbyCorrespondingLocale(coords)}Here {/if}{/await}I am </span>        
-        {/if}
-        {aLine}
+    {#await isNearbyLocale then isNearby}
+      <div class='couplet' in:blur|local={getBlurInOptions(isNearby)} 
+        on:introstart={() => blurIntroStart()} on:introend={() => blurIntroEnd(isNearby) }>
+        <div class='line'>
+          {#if showIamText}
+            <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), 
+              duration: secsToMillisecs(getRandomInt(15, 1)) }} class='i-am'>
+                {#if isNearby}
+                  <span>Here </span> 
+                {/if}
+              I am </span>        
+          {/if}
+          {aLine}
+        </div>
+        <div class='line'>
+          {bLine}
+        </div>
       </div>
-      <div class='line'>
-        {bLine}
-      </div>
-    </div>
+    {/await}
   {/if}
 </div>
 
