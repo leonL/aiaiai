@@ -3,7 +3,6 @@
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
   import { getRandomInt, secsToMillisecs, haversine_distance } from './helpers.js';
-  import { quadOut } from 'svelte/easing';
 
   const dispatch = createEventDispatcher();
   
@@ -38,6 +37,8 @@
     revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
   }
 
+  let showIamText = false;
+
   function revealLettersAtRandom() {
     let revealLettersInterval = setInterval(() => {
 
@@ -49,8 +50,10 @@
         revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
+        renderAsLetters = false;
+        if (iAmCouplet) showIamText = true;
       };
-    }, iAmCouplet ? 100 : (100 * getRandomInt(6, 3)));
+    }, iAmCouplet ? 100 : (100 * getRandomInt(4, 2)));
   };
 
   function getConcealedLineId() {
@@ -65,27 +68,6 @@
       concealedLineId = concealedLineIds[0];
     };
     return concealedLineId;
-  };
-
-  function sproutLetter(node, params) {
-		return {
-			delay: params.delay || 0,
-			duration: params.duration || secsToMillisecs(10),
-			easing: params.easing || quadOut,
-			css: (t, _) => `font-size: ${t * 100}%; opacity: ${t}`
-		};
-	};
-
-  const lettersCount = letters.a.length + letters.b.length;
-
-  let lettersSproutedCount = 0,  showIamText = false;
-
-  function letterSprouted() {
-    lettersSproutedCount++;
-    if (lettersSproutedCount >= lettersCount) {
-      if (iAmCouplet) showIamText = true;
-      renderAsLetters = false;
-    }
   };
 
   function getBlurInOptions() {
@@ -129,14 +111,12 @@
     <div class='couplet'>
       <div class='line'>
         {#each revealedLettersWithIds.a as letterData (letterData.id)}
-          <span in:sproutLetter|local on:introend={() => letterSprouted() }
-            class='letter'>{letterData.letter}</span>
+          <span class='letter'>{letterData.letter}</span>
         {/each}
       </div>
       <div class='line'>
         {#each revealedLettersWithIds.b as letterData (letterData.id)}
-          <span in:sproutLetter|local on:introend={() => letterSprouted() }
-            class='letter'>{letterData.letter}</span>
+          <span class='letter'>{letterData.letter}</span>
         {/each}
       </div>
     </div>
