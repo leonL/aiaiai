@@ -4,6 +4,7 @@
   import junctionLocales from './data/junctionLocales.js';
   
   export let verse;
+  export let iAmAllOverride;
   
   const coupletCount = 3;
 
@@ -27,7 +28,7 @@
       coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
       correspondingLocaleData={getJunctionLocaleDataById(couplet.piSlice)}
       on:countdownStep={ () => countdownToLetterReveal(i) } 
-      on:verseSequenceComplete />
+      on:verseSequenceComplete on:iAmAll {iAmAllOverride} />
   {/each}
 </div>
 

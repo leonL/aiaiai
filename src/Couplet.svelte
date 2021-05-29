@@ -1,8 +1,8 @@
 <script>
-  import { getContext, createEventDispatcher } from 'svelte';
+  import { getContext, createEventDispatcher, tick } from 'svelte';
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
-  import { getRandomInt, secsToMillisecs, haversine_distance } from './helpers.js';
+  import { getRandomInt, secsToMillisecs, minsToMillisecs, haversine_distance } from './helpers.js';
 
   const dispatch = createEventDispatcher();
   
@@ -13,6 +13,7 @@
   export let coupletIndex;
   export let iAmCouplet = false;
   export let revealLetters;
+  export let iAmAllOverride;
 
   let showLeader = true, showPiSlice = false, coupletHeight;
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
@@ -37,7 +38,7 @@
     revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
   }
 
-  let showIamText = false;
+  let showIamText = true;
 
   function revealLettersAtRandom() {
     let revealLettersInterval = setInterval(() => {
@@ -51,7 +52,6 @@
       } else {
         clearInterval(revealLettersInterval);
         renderAsLetters = false;
-        if (iAmCouplet) showIamText = true;
       };
     }, iAmCouplet ? 100 : (100 * getRandomInt(4, 2)));
   };
@@ -70,18 +70,53 @@
     return concealedLineId;
   };
 
-  function getBlurInOptions(isNearbyLocale) {
-    let options = {delay: 0, duration: 0, opacity: 100};
-    if (iAmCouplet && !isNearbyLocale) options = {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
+  function obscureTextOptions(isNearbyLocale) {
+    let options = isNearbyLocale ? {delay: 0, duration: 0, opacity: 100} : 
+      {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
     return options; 
   };
 
-  function blurIntroStart() {
-    if (iAmCouplet) dispatch('verseSequenceComplete', true);
+  let iAmIsCycling = false;
+  $: isShekhinah = piSlice === 0;
+
+  function obscureTextStart() {
+    iAmIsCycling = true;
+    // console.log(`${verseNumber}-${coupletIndex}: iAmCycle START`);
+    if (!iAmAllOverride) {
+      if (iAmCouplet && isShekhinah) {
+        dispatch('iAmAll', true);
+      } else if (iAmCouplet) {
+        dispatch('verseSequenceComplete', true);
+      };
+    };
   };
 
-  function blurIntroEnd(isNearbyLocale) {
-    if (!isNearbyLocale && iAmCouplet && showIamText) showIamText = false;
+  function obscureTextEnd(isNearbyLocale) {
+    if (!isNearbyLocale) showIamText = false;
+  };
+
+  function iAmForgotten() {
+    iAmIsCycling = false;
+    // console.log(`${verseNumber}-${coupletIndex}: iAmCycle END`);
+  };
+
+  let iAm = iAmCouplet;
+
+  $: if (iAmAllOverride) {
+    if (!iAmCouplet) {
+      iAm = true;
+    } else {
+      overrideIamCouplet();
+    } 
+  };
+
+  async function overrideIamCouplet() {
+    if (!iAmIsCycling) {
+      iAm = false;
+      showIamText = true;
+      await tick();
+      iAm = true;
+    } 
   };
 
   const isNearbyLocale = new Promise(async (resolve, reject) => {
@@ -96,6 +131,13 @@
     if (metersFromLocale <= meters) nearby = true;
     return nearby; 
   };
+
+  function iAmFadeOptions() {
+    let delay = isShekhinah ? 0 : secsToMillisecs(getRandomInt(25)),
+      duration = isShekhinah ? minsToMillisecs(5) : secsToMillisecs(getRandomInt(15, 1));
+    let options = {delay, duration};  
+    return options;
+  }
 </script>
 
 <div class='distich' bind:clientHeight={coupletHeight} >
@@ -124,17 +166,14 @@
         {/each}
       </div>
     </div>
-  {:else}
+  {:else if iAm}
     {#await isNearbyLocale then isNearby}
-      <div class='couplet' in:blur|local={getBlurInOptions(isNearby)} 
-        on:introstart={() => blurIntroStart()} on:introend={() => blurIntroEnd(isNearby) }>
+      <div class='couplet' in:blur|local={obscureTextOptions(isNearby)} 
+        on:introstart={() => obscureTextStart()} on:introend={() => obscureTextEnd(isNearby) }>
         <div class='line'>
           {#if showIamText}
-            <span out:fade|local={{delay: secsToMillisecs(getRandomInt(25)), 
-              duration: secsToMillisecs(getRandomInt(15, 1)) }} class='i-am'>
-                {#if isNearby}
-                  <span>Here </span> 
-                {/if}
+            <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
+              {#if isNearby}<span>Here </span>{/if}
               I am </span>        
           {/if}
           {aLine}
@@ -144,6 +183,11 @@
         </div>
       </div>
     {/await}
+  {:else}
+    <div class='couplet'>
+      <div class='line'>{aLine}</div>
+      <div class='line'>{bLine}</div>
+    </div>
   {/if}
 </div>
 

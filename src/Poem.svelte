@@ -19,6 +19,8 @@
 	});	
 
 	setContext('deviceCoordinates', geoLocationPromise);
+
+	let iAmAllOverride = false;
 </script>
 
 <svelte:head>
@@ -28,7 +30,8 @@
 <main id='aiwia'>
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 		<div animate:flip={{duration: 500}}>
-			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
+			<Verse {verse} {iAmAllOverride} on:verseSequenceComplete={ () => activeVerseSpan++ }
+				on:iAmAll={() => iAmAllOverride = true} />
 		</div>
 	{/each}
 </main>
