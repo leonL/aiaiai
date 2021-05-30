@@ -101,7 +101,7 @@
   };
 
   function obscureTextEnd(isNearbyLocale) {
-    if (!isNearbyLocale || !iAmHereOverride) showIamText = false; // unless (isNearByLocal || iAmHereOverride) 
+    if (!isNearbyLocale && !iAmHereOverride) showIamText = false;
   };
 
   function iAmForgotten() {
