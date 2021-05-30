@@ -27,7 +27,7 @@
   {#each verse.couplets as couplet, i}
     <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
       coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
-      correspondingLocaleData={getJunctionLocaleDataById(couplet.piSlice)}
+      correspondingLocaleData={getJunctionLocaleDataById(verse.verseNumber)}
       on:countdownStep={ () => countdownToLetterReveal(i) } 
       on:verseSequenceComplete on:iAmAll on:iAmHere
       {iAmAllOverride} {iAmHereOverride} />
