@@ -12,10 +12,10 @@
 	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
 
 	const geoLocationPromise = new Promise((resolve, reject) => {
-		navigator.geolocation.getCurrentPosition(pos => {
-			let coordinates = pos.coords;
-			resolve(coordinates);
-		});
+		navigator.geolocation.getCurrentPosition(
+			pos => { resolve(pos.coords) },
+			err => { reject(err) }
+		);
 	});	
 
 	setContext('deviceCoordinates', geoLocationPromise);
