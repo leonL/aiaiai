@@ -137,7 +137,7 @@
 
   onMount(async () => {
     isNearbyLocale = await deviceCoordinatesPromise.then(
-      coords => { nearbyCorrespondingLocale(coords) },
+      coords => {  return nearbyCorrespondingLocale(coords) },
       err => { false }
     );
   });

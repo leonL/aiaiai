@@ -1,21 +1,39 @@
 const junctionLocales = [
+  // {
+  //   id: 1,
+  //   latitude: 43.66645863835589,
+  //   longitude: -79.47548076544192,
+  //   description: "Knesseth Israel Synaogue"
+  // },
   {
     id: 1,
-    latitude: 43.66645863835589,
-    longitude: -79.47548076544192,
-    description: "Knesseth Israel Synaogue"
+    latitude: 43.66359742481899,
+    longitude: -79.4652499618127,
+    description: "127 Annette"
   },
+  // {
+  //   id: 2,
+  //   latitude: 43.66432635628411,
+  //   longitude: -79.46429091747497,
+  //   description: "Correctional Service of Canada"
+  // },
+  // {
+  //   id: 3,
+  //   latitude: 43.665517612585425,
+  //   longitude: -79.46311115377056,
+  //   description: "Salvation Army - Evangeline Residence"
+  // },
   {
     id: 2,
-    latitude: 43.66432635628411,
-    longitude: -79.46429091747497,
-    description: "Correctional Service of Canada"
+    latitude: 43.66359742481899,
+    longitude: -79.4652499618127,
+    description: "127 Annette"
   },
   {
     id: 3,
-    latitude: 43.665517612585425,
-    longitude: -79.46311115377056,
-    description: "Salvation Army - Evangeline Residence"
+    latitude: 43.66359742481899,
+    longitude: -79.4652499618127,
+    description: "127 Annette"
   },
   {
     id: 4,
