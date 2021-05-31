@@ -52,9 +52,9 @@
         revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
-        renderAsLetters = false;
+        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(5))
       };
-    }, iAmCouplet ? 100 : (100 * getRandomInt(4, 2)));
+    }, iAmCouplet ? 50 : 125);
   };
 
   function getConcealedLineId() {
@@ -170,13 +170,15 @@
   {#if renderAsLetters}
     <div class='couplet'>
       <div class='line'>
-        {#each revealedLettersWithIds.a as letterData (letterData.id)}
-          <span class='letter'>{letterData.letter}</span>
+        {#each lettersWithIds.a as letterData (letterData.id)}
+          <span class:revealed={revealedLetterIds.a.includes(letterData.id)}
+            class='letter'>{letterData.letter}</span>
         {/each}
       </div>
       <div class='line'>
-        {#each revealedLettersWithIds.b as letterData (letterData.id)}
-          <span class='letter'>{letterData.letter}</span>
+        {#each lettersWithIds.b as letterData (letterData.id)}
+          <span class:revealed={revealedLetterIds.b.includes(letterData.id)}
+            class='letter'>{letterData.letter}</span>
         {/each}
       </div>
     </div>
@@ -244,5 +246,15 @@
   .line {
     min-height: 6vw;
     /* border: 1px solid green; */
+  }
+
+  .letter {
+    opacity: 0;
+    /* transition-property: opacity;
+    transition-duration: 1s; */
+  }
+
+  .revealed {
+    opacity: 1;
   }
 </style>
