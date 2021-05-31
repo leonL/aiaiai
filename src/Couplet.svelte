@@ -1,5 +1,5 @@
 <script>
-  import { getContext, createEventDispatcher, tick } from 'svelte';
+  import { getContext, createEventDispatcher, tick, onMount } from 'svelte';
   import { blur, fade } from 'svelte/transition';
   import CountdownLeader from './CountdownLeader.svelte';
   import { getRandomInt, secsToMillisecs, minsToMillisecs, haversine_distance } from './helpers.js';
@@ -71,7 +71,7 @@
     return concealedLineId;
   };
 
-  function obscureTextOptions(isNearbyLocale) {
+  function obscureTextOptions() {
     let overrule = isNearbyLocale || iAmHereOverride;
     let options = overrule ? {delay: 0, duration: 0, opacity: 100} : 
       {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
@@ -100,7 +100,7 @@
     };
   };
 
-  function obscureTextEnd(isNearbyLocale) {
+  function obscureTextEnd() {
     if (!isNearbyLocale && !iAmHereOverride) showIamText = false;
   };
 
@@ -129,11 +129,8 @@
     } 
   };
 
-  const isNearbyLocale = new Promise(async (resolve, reject) => {
-    getContext('deviceCoordinates').then(coords => {
-      resolve(nearbyCorrespondingLocale(coords));
-    });
-	});	
+  const deviceCoordinatesPromise = getContext('deviceCoordinates');
+  let isNearbyLocale = false;
 
   function nearbyCorrespondingLocale(deviceCoords, meters = 50) {  
     let metersFromLocale = haversine_distance(deviceCoords, correspondingLocaleData) * 1000,
@@ -141,6 +138,13 @@
     if (metersFromLocale <= meters) nearby = true;
     return nearby; 
   };
+
+  onMount(async () => {
+    isNearbyLocale = await deviceCoordinatesPromise.then(
+      coords => { nearbyCorrespondingLocale(coords) },
+      err => { false }
+    );
+  });
 
   function iAmFadeOptions() {
     let delay = isShekhinah ? 0 : secsToMillisecs(getRandomInt(25)),
@@ -177,22 +181,20 @@
       </div>
     </div>
   {:else if iAm}
-    {#await isNearbyLocale then isNearby}
-      <div class='couplet' in:blur|local={obscureTextOptions(isNearby)} 
-        on:introstart={() => obscureTextStart()} on:introend={() => obscureTextEnd(isNearby) }>
-        <div class='line'>
-          {#if showIamText}
-            <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
-              {#if isNearby  || iAmHereOverride}<span>Here </span>{/if}
-              I am </span>        
-          {/if}
-          {aLine}
-        </div>
-        <div class='line'>
-          {bLine}
-        </div>
+    <div class='couplet' in:blur|local={obscureTextOptions()} 
+      on:introstart={() => obscureTextStart()} on:introend={() => obscureTextEnd() }>
+      <div class='line'>
+        {#if showIamText}
+          <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
+            {#if isNearbyLocale || iAmHereOverride}<span>Here </span>{/if}
+            I am </span>        
+        {/if}
+        {aLine}
       </div>
-    {/await}
+      <div class='line'>
+        {bLine}
+      </div>
+    </div>
   {:else}
     <div class='couplet'>
       <div class='line'>{aLine}</div>
