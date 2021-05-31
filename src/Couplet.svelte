@@ -52,7 +52,7 @@
         revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
-        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(5))
+        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(7))
       };
     }, iAmCouplet ? 50 : 125);
   };
@@ -250,8 +250,8 @@
 
   .letter {
     opacity: 0;
-    /* transition-property: opacity;
-    transition-duration: 1s; */
+    transition-property: opacity;
+    transition-duration: 10s;
   }
 
   .revealed {
