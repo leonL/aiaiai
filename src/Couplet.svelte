@@ -81,11 +81,7 @@
   let iAmIsCycling = false, isHeneni = false;
   $: isShekhinah = piSlice === 0;
   
-  $: if (isShekhinah) {
-    isNearbyLocale.then(nearby => {
-      if (nearby) isHeneni = true;
-    });
-  };
+  $: if (isShekhinah && isNearbyLocale) isHeneni = true;
 
   function obscureTextStart() {
     iAmIsCycling = true;
@@ -186,10 +182,10 @@
     <div class='couplet' in:blur|local={obscureTextOptions()} 
       on:introstart={() => obscureTextStart()} on:introend={() => obscureTextEnd() }>
       <div class='line'>
-        {#if showIamText}
-          <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
-            {#if isNearbyLocale || iAmHereOverride}<span>Here </span>{/if}
-            I am </span>        
+        {#if showIamText && !(isNearbyLocale || iAmHereOverride)}
+          <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>am I </span>
+        {:else if isNearbyLocale || iAmHereOverride}
+          <span>Here I am </span>      
         {/if}
         {aLine}
       </div>
