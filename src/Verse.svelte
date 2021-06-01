@@ -1,6 +1,5 @@
 <script>
   import Couplet from './Couplet.svelte';
-  import { getRandomInt } from './helpers.js';
   import junctionLocales from './data/junctionLocales.js';
   import { createEventDispatcher } from 'svelte';
 

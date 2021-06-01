@@ -1,4 +1,5 @@
 <script>
+	import { flip } from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
 	import { setContext } from 'svelte';
 
@@ -26,7 +27,7 @@
 
 <main id='aiwia'>
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
-		<div>
+		<div animate:flip={{duration: 1000}}>
 			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
 		</div>
 	{/each}
