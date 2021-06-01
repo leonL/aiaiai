@@ -5,8 +5,8 @@
   export let radiusMax;
   export let delayFactor;
 
-  const fillPercentTween = tweened(100, {duration: 3000, delay: 100}),
-    radiusTween = tweened(2, {delay: (2500 * delayFactor), duration: 3000}),
+  const fillPercentTween = tweened(100, {duration: 500, delay: 0}),
+    radiusTween = tweened(2, {delay: (750 * delayFactor), duration: 150}),
     doubleRadiusMax = radiusMax * 2, quadrupleRadiusMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
