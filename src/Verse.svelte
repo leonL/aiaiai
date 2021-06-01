@@ -7,7 +7,7 @@
 
   export let verse;
   
-  const coupletCount = 3;
+  let coupletCount = verse.couplets.length;
   let emanationIndex = 0;
 
   function getJunctionLocaleDataById(id) {

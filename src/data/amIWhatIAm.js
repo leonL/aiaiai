@@ -231,11 +231,6 @@ const amIWhatIAm = [
         piSlice: 0,
         a: "the other",
         b: "am I what I am" 
-      },
-      {
-        piSlice: 2,
-        a: "some chink in athleisure jogging the junction",
-        b: "of overhearing, the featherweight heavy breathing" 
       }
     ]
   }
