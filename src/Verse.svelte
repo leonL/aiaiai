@@ -9,28 +9,30 @@
   export let verse;
   
   const coupletCount = 3;
-
-  let countdown = 0, revealLetters = false,
-    iAmCoupletIndex = getRandomInt(coupletCount - 1);
-  
-  function countdownToLetterReveal(_) {
-    if (++countdown === coupletCount) revealLetters = true;
-  };
+  let emanationIndex = 0;
 
   function getJunctionLocaleDataById(id) {
     let locale = junctionLocales.find(l => l.id == id ); 
     return locale;
-  }
+  };
+
+  function afterCoupletRevealed(coupletIndex) {
+    if (coupletIndex < coupletCount - 1) {
+      emanationIndex = emanationIndex + 1;
+    } else {
+      dispatch('verseSequenceComplete', 'true');
+    };
+  };
 
 </script>
 
 <div class='verse'>
   {#each verse.couplets as couplet, i}
     <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
-      coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
+      coupletIndex={i} 
       correspondingLocaleData={getJunctionLocaleDataById(verse.verseNumber)}
-      on:countdownStep={ () => countdownToLetterReveal(i) } 
-      on:allLettersRevealed={ (event) => { if (event.detail) dispatch('verseSequenceComplete', 'true') }} />
+      emanate={emanationIndex === i}
+      on:allLettersRevealed={ (event) => afterCoupletRevealed(event.detail) } />
   {/each}
 </div>
 

@@ -41,7 +41,5 @@
 		padding: 0 10px;
 		font-family: 'EB Garamond', serif;
 		overflow-y: scroll;
-		background-color: black;
-		color: white;
 	}
 </style>

@@ -1,7 +1,7 @@
 <script>
   import { getContext, createEventDispatcher, onMount } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte';
-  import { getRandomInt, secsToMillisecs, minsToMillisecs, haversine_distance } from './helpers.js';
+  import { haversine_distance } from './helpers.js';
 
   const dispatch = createEventDispatcher();
   
@@ -10,15 +10,12 @@
   export let piSlice;
   export let correspondingLocaleData;
   export let coupletIndex;
-  export let iAmCouplet = false;
-  export let revealLetters;
+  export let emanate;
 
   let showLeader = true, showPiSlice = false, coupletHeight;
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
 
   let renderAsLetters = true;
-
-  $: if (revealLetters) revealLettersAtRandom();
 
   let letters = {a: aLine.split(''), b: bLine.split('')},
     aLettersWithIds = letters.a.map((l, i) => ( {id: i, letter: l} )),
@@ -36,35 +33,17 @@
     revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
   }
 
-  function revealLettersAtRandom() {
-    let revealLettersInterval = setInterval(() => {
-
-      let revealLineId = getConcealedLineId();
-      
-      if (revealLineId) { 
-        let lineId = revealLineId, concealedLetterIdIndex = getRandomInt(concealedLetterIds[lineId].length - 1),
-          concealedLetterId = concealedLetterIds[lineId].splice(concealedLetterIdIndex, 1);
-        revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
+  function revealLettersSerially() {
+    let lettersInterval = setInterval(() => {
+      if (concealedLetterIds.a.length > 0) {
+        revealedLetterIds.a = [...revealedLetterIds.a, concealedLetterIds.a.shift()];
+      } else if (concealedLetterIds.b.length > 0) {
+        revealedLetterIds.b = [...revealedLetterIds.b, concealedLetterIds.b.shift()];
       } else {
-        clearInterval(revealLettersInterval);
-        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(5))
-        dispatch('allLettersRevealed', iAmCouplet);
-      };
-    }, iAmCouplet ? 10 : 10);
-  };
-
-  function getConcealedLineId() {
-    let concealedLineIds = [], concealedLineId = false;
-
-    if (concealedLetterIds.a.length > 0) concealedLineIds.push('a');
-    if (concealedLetterIds.b.length > 0) concealedLineIds.push('b');
-
-    if (concealedLineIds.length === 2) {
-      concealedLineId = concealedLineIds[getRandomInt(1)];
-    } else if (concealedLineIds.length === 1) {
-      concealedLineId = concealedLineIds[0];
-    };
-    return concealedLineId;
+        clearInterval(lettersInterval);
+        dispatch('allLettersRevealed', coupletIndex);
+      }
+    }, 100);
   };
 
   const deviceCoordinatesPromise = getContext('deviceCoordinates');
@@ -83,22 +62,15 @@
       err => { false }
     );
   });
-
-  function iAmFadeOptions() {
-    let delay = isShekhinah ? 0 : secsToMillisecs(getRandomInt(25)),
-      duration = isShekhinah ? minsToMillisecs(5) : secsToMillisecs(getRandomInt(15, 1));
-    let options = {delay, duration};  
-    return options;
-  }
 </script>
 
 <div class='distich' bind:clientHeight={coupletHeight} >
   <div class='pi-slice'>
     {#if showLeader && halfCoupletHeight && halfCoupletHeight !== 0}
       <div class='countdown-leader'>
-        <CountdownLeader radiusMax={halfCoupletHeight} delayFactor={coupletIndex}
+        <CountdownLeader radiusMax={halfCoupletHeight} emanate={emanate} 
           on:leaderDilated= { () => { showPiSlice = true; } }
-          on:leaderWiped= { () => { showLeader = false; dispatch('countdownStep', true) } } />
+          on:leaderWiped= { () => { showLeader = false; revealLettersSerially() } } />
       </div>
     {/if}
     {#if showPiSlice}
@@ -162,7 +134,6 @@
   }
   .couplet {
     flex-grow: 1;
-    font-size: 4vw;
     /* border: 1px dashed red; */
   }
 
@@ -173,8 +144,6 @@
 
   .letter {
     opacity: 0;
-    transition-property: opacity;
-    transition-duration: 2s;
   }
 
   .revealed {
