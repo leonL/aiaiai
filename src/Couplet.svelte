@@ -98,7 +98,7 @@
     justify-content: center;
     position: relative;
     font-family: 'Heebo', sans-serif;
-    font-size: 3.5vw;
+    font-size: 3vw;
     font-weight: 400;
     width: 5%;
     /* border: 1px solid olivedrab; */
