@@ -50,7 +50,7 @@
         setTimeout(() => { renderAsLetters = false }, secsToMillisecs(5))
         dispatch('allLettersRevealed', iAmCouplet);
       };
-    }, iAmCouplet ? 0 : 100);
+    }, iAmCouplet ? 50 : 500);
   };
 
   function getConcealedLineId() {
