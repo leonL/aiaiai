@@ -28,7 +28,7 @@
 
 <svg class='leader' width={quadrupleRadiusMax} height={quadrupleRadiusMax} viewBox="0 0 {quadrupleRadiusMax} {quadrupleRadiusMax}">
   <circle r={$radiusTween} cx={doubleRadiusMax} cy={doubleRadiusMax} fill="transparent" 
-    stroke="black"
+    stroke="white"
     stroke-width={doubleR}
     stroke-dasharray="{$fillPercentTween * circumfrence/100} {circumfrence}"
     transform="rotate(-90, {doubleRadiusMax}, {doubleRadiusMax}) translate(0, {quadrupleRadiusMax}) scale(1,-1)"
