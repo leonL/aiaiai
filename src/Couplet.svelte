@@ -18,27 +18,16 @@
   let renderAsLetters = true;
 
   let letters = {a: aLine.split(''), b: bLine.split('')},
-    aLettersWithIds = letters.a.map((l, i) => ( {id: i, letter: l} )),
-    bLettersWithIds = letters.b.map((l, i) => ( {id: i, letter: l} )),
-    lettersWithIds = {a: aLettersWithIds, b: bLettersWithIds};
-
-  let aConcealedLetterIds = Array.from(letters.a, (_, i) => i),
-    bConcealedLetterIds = Array.from(letters.b, (_, i) => i),
-    concealedLetterIds = {a: aConcealedLetterIds, b: bConcealedLetterIds},
-    revealedLetterIds = {a: [], b: []},
-    revealedLettersWithIds = {a: [], b: []};
-
-  $: {
-    revealedLettersWithIds.a = lettersWithIds.a.filter((_, i) => revealedLetterIds.a.includes(i));
-    revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
-  }
+    revealedLetterIds = {a: [], b: []};
+  
+  const letterCounts = {a: letters.a.length, b: letters.b.length };  
 
   function revealLettersSerially() {
     let lettersInterval = setInterval(() => {
-      if (concealedLetterIds.a.length > 0) {
-        revealedLetterIds.a = [...revealedLetterIds.a, concealedLetterIds.a.shift()];
-      } else if (concealedLetterIds.b.length > 0) {
-        revealedLetterIds.b = [...revealedLetterIds.b, concealedLetterIds.b.shift()];
+      if (revealedLetterIds.a.length < letterCounts.a ) {
+        revealedLetterIds.a = [...revealedLetterIds.a, revealedLetterIds.a.length];
+      } else if (revealedLetterIds.b.length < letterCounts.b) {
+        revealedLetterIds.b = [...revealedLetterIds.b, revealedLetterIds.b.length];
       } else {
         clearInterval(lettersInterval);
         dispatch('allLettersRevealed', coupletIndex);
@@ -80,15 +69,15 @@
   {#if renderAsLetters}
     <div class='couplet'>
       <div class='line'>
-        {#each lettersWithIds.a as letterData (letterData.id)}
-          <span class:revealed={revealedLetterIds.a.includes(letterData.id)}
-            class='letter'>{letterData.letter}</span>
+        {#each letters.a as letter, i}
+          <span class:revealed={revealedLetterIds.a.includes(i)}
+            class='letter'>{letter}</span>
         {/each}
       </div>
       <div class='line'>
-        {#each lettersWithIds.b as letterData (letterData.id)}
-          <span class:revealed={revealedLetterIds.b.includes(letterData.id)}
-            class='letter'>{letterData.letter}</span>
+        {#each letters.b as letter, i}
+          <span class:revealed={revealedLetterIds.b.includes(i)}
+            class='letter'>{letter}</span>
         {/each}
       </div>
     </div>
