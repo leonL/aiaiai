@@ -92,7 +92,7 @@
     justify-content: center;
     position: relative;
     font-family: 'Heebo', sans-serif;
-    font-size: 3vw;
+    font-size: min(75%, 12px);
     font-weight: 400;
     width: 5%;
     /* border: 1px solid olivedrab; */
@@ -112,12 +112,6 @@
     flex-grow: 1;
     /* border: 1px dashed red; */
   }
-
-  .line {
-    min-height: 6vw;
-    /* border: 1px solid green; */
-  }
-
   .letter {
     opacity: 0;
   }

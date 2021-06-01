@@ -43,9 +43,12 @@
 		display: flex;
 		flex-direction: column-reverse;
 		height: 100%;
-		font-size: 4vw;
+		font-size: min(4vw, 20px);
 		padding: 0 10px;
 		font-family: 'EB Garamond', serif;
 		overflow-y: scroll;
+		max-width: 500px;
+		margin-left: auto;
+		background-color: white;
 	}
 </style>
