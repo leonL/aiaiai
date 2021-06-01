@@ -66,27 +66,20 @@
       {piSlice}
     {/if}
   </div>
-  {#if renderAsLetters}
-    <div class='couplet'>
-      <div class='line'>
-        {#each letters.a as letter, i}
-          <span class:revealed={revealedLetterIds.a.includes(i)}
-            class='letter'>{letter}</span>
-        {/each}
-      </div>
-      <div class='line'>
-        {#each letters.b as letter, i}
-          <span class:revealed={revealedLetterIds.b.includes(i)}
-            class='letter'>{letter}</span>
-        {/each}
-      </div>
+  <div class='couplet'>
+    <div class='line'>
+      {#each letters.a as letter, i}
+        <span class:revealed={revealedLetterIds.a.includes(i)}
+          class='letter'>{letter}</span>
+      {/each}
     </div>
-  {:else}
-    <div class='couplet'>
-      <div class='line'>{aLine}</div>
-      <div class='line'>{bLine}</div>
+    <div class='line'>
+      {#each letters.b as letter, i}
+        <span class:revealed={revealedLetterIds.b.includes(i)}
+          class='letter'>{letter}</span>
+      {/each}
     </div>
-  {/if}
+  </div>
 </div>
 
 <style>
