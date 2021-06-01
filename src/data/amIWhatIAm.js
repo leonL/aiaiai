@@ -4,17 +4,17 @@ const amIWhatIAm = [
     couplets: [
       {
         piSlice: 3,
-        a: "a test market smile on your forgettable face",
+        a: "a wet, market smile on your forgettable face",
         b: "delivering that neighbourly something to our hood" 
       },
       {
         piSlice: 2,
-        a: "some test in athleisure jogging the junction",
+        a: "some chink in athleisure jogging the junction",
         b: "of overhearing, the featherweight heavy breathing" 
       },
       {
         piSlice: 1,
-        a: "the other test people, a new Israelite vector",
+        a: "the other white people, a new Israelite vector",
         b: "starting from the horrible reach of her desperate touch" 
       }
     ]
