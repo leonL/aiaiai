@@ -2,10 +2,11 @@
   import Couplet from './Couplet.svelte';
   import { getRandomInt } from './helpers.js';
   import junctionLocales from './data/junctionLocales.js';
-  
+  import { createEventDispatcher } from 'svelte';
+
+  const dispatch = createEventDispatcher();
+
   export let verse;
-  export let iAmAllOverride;
-  export let iAmHereOverride;
   
   const coupletCount = 3;
 
@@ -29,8 +30,7 @@
       coupletIndex={i} iAmCouplet={ iAmCoupletIndex === i } {revealLetters}
       correspondingLocaleData={getJunctionLocaleDataById(verse.verseNumber)}
       on:countdownStep={ () => countdownToLetterReveal(i) } 
-      on:verseSequenceComplete on:iAmAll on:iAmHere
-      {iAmAllOverride} {iAmHereOverride} />
+      on:allLettersRevealed={ (event) => { if (event.detail) dispatch('verseSequenceComplete', 'true') }} />
   {/each}
 </div>
 

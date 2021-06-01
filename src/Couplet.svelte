@@ -1,6 +1,5 @@
 <script>
-  import { getContext, createEventDispatcher, tick, onMount } from 'svelte';
-  import { blur, fade } from 'svelte/transition';
+  import { getContext, createEventDispatcher, onMount } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte';
   import { getRandomInt, secsToMillisecs, minsToMillisecs, haversine_distance } from './helpers.js';
 
@@ -13,8 +12,6 @@
   export let coupletIndex;
   export let iAmCouplet = false;
   export let revealLetters;
-  export let iAmAllOverride;
-  export let iAmHereOverride;
 
   let showLeader = true, showPiSlice = false, coupletHeight;
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
@@ -39,8 +36,6 @@
     revealedLettersWithIds.b = lettersWithIds.b.filter((_, i) => revealedLetterIds.b.includes(i));
   }
 
-  let showIamText = true;
-
   function revealLettersAtRandom() {
     let revealLettersInterval = setInterval(() => {
 
@@ -52,9 +47,10 @@
         revealedLetterIds[lineId] = [...revealedLetterIds[lineId], ...concealedLetterId];
       } else {
         clearInterval(revealLettersInterval);
-        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(7))
+        setTimeout(() => { renderAsLetters = false }, secsToMillisecs(5))
+        dispatch('allLettersRevealed', iAmCouplet);
       };
-    }, iAmCouplet ? 50 : 125);
+    }, iAmCouplet ? 0 : 1000);
   };
 
   function getConcealedLineId() {
@@ -71,64 +67,6 @@
     return concealedLineId;
   };
 
-  function obscureTextOptions() {
-    let overrule = isNearbyLocale || iAmHereOverride;
-    let options = overrule ? {delay: 0, duration: 0, opacity: 100} : 
-      {duration: secsToMillisecs(getRandomInt(120, 10)), opacity: 10};
-    return options; 
-  };
-
-  let iAmIsCycling = false, isHeneni = false;
-  $: isShekhinah = piSlice === 0;
-  
-  $: if (isShekhinah) {
-    isNearbyLocale.then(nearby => {
-      if (nearby) isHeneni = true;
-    });
-  };
-
-  function obscureTextStart() {
-    iAmIsCycling = true;
-    // console.log(`${verseNumber}-${coupletIndex}: iAmCycle START`);
-    if (!iAmAllOverride) {
-      if (iAmCouplet && isShekhinah) {
-        dispatch('iAmAll', true);
-        if (isHeneni) dispatch('iAmHere', true);
-      } else if (iAmCouplet) {
-        dispatch('verseSequenceComplete', true);
-      };
-    };
-  };
-
-  function obscureTextEnd() {
-    if (!isNearbyLocale && !iAmHereOverride) showIamText = false;
-  };
-
-  function iAmForgotten() {
-    iAmIsCycling = false;
-    if (iAmHereOverride) showIamText = true;
-    // console.log(`${verseNumber}-${coupletIndex}: iAmCycle END`);
-  };
-
-  let iAm = iAmCouplet;
-
-  $: if (iAmAllOverride) {
-    if (!iAmCouplet) {
-      iAm = true;
-    } else {
-      overrideIamCouplet();
-    } 
-  };
-
-  async function overrideIamCouplet() {
-    if (!iAmIsCycling) {
-      iAm = false;
-      showIamText = true;
-      await tick();
-      iAm = true;
-    } 
-  };
-
   const deviceCoordinatesPromise = getContext('deviceCoordinates');
   let isNearbyLocale = false;
 
@@ -141,7 +79,7 @@
 
   onMount(async () => {
     isNearbyLocale = await deviceCoordinatesPromise.then(
-      coords => { nearbyCorrespondingLocale(coords) },
+      coords => {  return nearbyCorrespondingLocale(coords) },
       err => { false }
     );
   });
@@ -180,21 +118,6 @@
           <span class:revealed={revealedLetterIds.b.includes(letterData.id)}
             class='letter'>{letterData.letter}</span>
         {/each}
-      </div>
-    </div>
-  {:else if iAm}
-    <div class='couplet' in:blur|local={obscureTextOptions()} 
-      on:introstart={() => obscureTextStart()} on:introend={() => obscureTextEnd() }>
-      <div class='line'>
-        {#if showIamText}
-          <span out:fade|local={iAmFadeOptions()} on:outroend={() => iAmForgotten() }>
-            {#if isNearbyLocale || iAmHereOverride}<span>Here </span>{/if}
-            I am </span>        
-        {/if}
-        {aLine}
-      </div>
-      <div class='line'>
-        {bLine}
       </div>
     </div>
   {:else}
