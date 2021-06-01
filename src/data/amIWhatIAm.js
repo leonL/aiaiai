@@ -180,7 +180,7 @@ const amIWhatIAm = [
     ]
   },
   {
-    verseNumber: 0,
+    verseNumber: 10,
     couplets: [
       {
         piSlice: 3,
@@ -200,7 +200,7 @@ const amIWhatIAm = [
     ]
   },
   {
-    verseNumber: 1,
+    verseNumber: 11,
     couplets: [
       {
         piSlice: 2,
@@ -220,7 +220,7 @@ const amIWhatIAm = [
     ]
   },
   {
-    verseNumber: 2,
+    verseNumber: 12,
     couplets: [
       {
         piSlice: 5,
