@@ -1,4 +1,5 @@
 <script>
+	import { flip } from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
 	import { setContext } from 'svelte';
 
@@ -18,9 +19,6 @@
 	});	
 
 	setContext('deviceCoordinates', geoLocationPromise);
-
-	let iAmAllOverride = false;
-	let iAmHereOverride = false;
 </script>
 
 <svelte:head>
@@ -29,10 +27,8 @@
 
 <main id='aiwia'>
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
-		<div>
-			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ }
-				{iAmAllOverride} {iAmHereOverride} 
-				on:iAmAll={() => iAmAllOverride = true} on:iAmHere={() => iAmHereOverride = true} />
+		<div animate:flip={{duration: 1000}}>
+			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
 		</div>
 	{/each}
 </main>

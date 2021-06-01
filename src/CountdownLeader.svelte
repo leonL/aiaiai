@@ -3,10 +3,10 @@
   import { onMount, createEventDispatcher } from 'svelte';
 
   export let radiusMax;
-  export let delayFactor;
+  export let emanate = false;
 
-  const fillPercentTween = tweened(100, {duration: 3000, delay: 100}),
-    radiusTween = tweened(2, {delay: (2500 * delayFactor), duration: 3000}),
+  const fillPercentTween = tweened(100, {duration: 2000}),
+    radiusTween = tweened(2, {delay: 750, duration: 2000}),
     doubleRadiusMax = radiusMax * 2, quadrupleRadiusMax = radiusMax * 4,
     dispatch = createEventDispatcher();
 
@@ -17,12 +17,16 @@
     circumfrence = doubleR * Math.PI;
   } 
 
-  onMount(async () => {
+  $: if (emanate) {
+    emenate();
+	};
+
+  async function emenate() {
     await radiusTween.set(radiusMax)
     dispatch('leaderDilated', true);
     await fillPercentTween.set(0)
     dispatch('leaderWiped', true);
-	});
+  };
 
 </script>
 
