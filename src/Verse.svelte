@@ -1,19 +1,14 @@
 <script>
   import Couplet from './Couplet.svelte';
-  import junctionLocales from './data/junctionLocales.js';
   import { createEventDispatcher } from 'svelte';
 
   const dispatch = createEventDispatcher();
 
   export let verse;
+  export let nearbyLocaleTable;
   
   let coupletCount = verse.couplets.length;
   let emanationIndex = 0;
-
-  function getJunctionLocaleDataById(id) {
-    let locale = junctionLocales.find(l => l.id == id ); 
-    return locale;
-  };
 
   function afterCoupletRevealed(coupletIndex) {
     if (coupletIndex < coupletCount - 1) {
@@ -28,9 +23,7 @@
 <div class='verse'>
   {#each verse.couplets as couplet, i}
     <Couplet aLine={couplet.a} bLine={couplet.b} piSlice={couplet.piSlice} 
-      coupletIndex={i} 
-      correspondingLocaleData={getJunctionLocaleDataById(verse.verseNumber)}
-      emanate={emanationIndex === i}
+      coupletIndex={i} emanate={emanationIndex === i} {nearbyLocaleTable}
       on:allLettersRevealed={ (event) => afterCoupletRevealed(event.detail) } />
   {/each}
 </div>

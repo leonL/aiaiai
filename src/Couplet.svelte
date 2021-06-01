@@ -1,27 +1,24 @@
 <script>
-  import { getContext, createEventDispatcher, onMount } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte';
-  import { haversine_distance } from './helpers.js';
 
   const dispatch = createEventDispatcher();
   
   export let aLine;
   export let bLine;
   export let piSlice;
-  export let correspondingLocaleData;
   export let coupletIndex;
   export let emanate;
+  export let nearbyLocaleTable;
 
   let showLeader = true, showPiSlice = false, coupletHeight;
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
-
-  let renderAsLetters = true;
-
-  let letters = {a: aLine.split(''), b: bLine.split('')},
-    revealedLetterIds = {a: [], b: []};
   
-  const letterCounts = {a: letters.a.length, b: letters.b.length };  
-
+  let letters = {a: aLine.split(''), b: bLine.split('')},
+  revealedLetterIds = {a: [], b: []};
+  
+  $: letterCounts = {a: letters.a.length, b: letters.b.length };  
+  
   function revealLettersSerially() {
     let lettersInterval = setInterval(() => {
       if (revealedLetterIds.a.length < letterCounts.a ) {
@@ -35,22 +32,19 @@
     }, 100);
   };
 
-  const deviceCoordinatesPromise = getContext('deviceCoordinates');
-  let isNearbyLocale = false;
+  const hineni = "Here I am";
 
-  function nearbyCorrespondingLocale(deviceCoords, meters = 50) {  
-    let metersFromLocale = haversine_distance(deviceCoords, correspondingLocaleData) * 1000,
-      nearby = false;
-    if (metersFromLocale <= meters) nearby = true;
-    return nearby; 
+  let nearbyLocale = false;
+  $: if (nearbyLocaleTable.length > 0) {
+    let nearbyLocaleData = nearbyLocaleTable.filter(locale => { 
+      return locale.piSliceId === piSlice;
+    });
+    nearbyLocale = nearbyLocaleData[0].nearby;
   };
 
-  onMount(async () => {
-    isNearbyLocale = await deviceCoordinatesPromise.then(
-      coords => {  return nearbyCorrespondingLocale(coords) },
-      err => { false }
-    );
-  });
+  $: if (nearbyLocale) {
+    letters.a = (hineni + " " + aLine).split('');
+  };
 </script>
 
 <div class='distich' bind:clientHeight={coupletHeight} >

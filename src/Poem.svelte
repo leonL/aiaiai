@@ -1,24 +1,29 @@
 <script>
 	import { flip } from 'svelte/animate';
 	import amIWhatIam from './data/amIWhatIAm.js';
-	import { setContext } from 'svelte';
+	import junctionLocales from './data/junctionLocales.js';
+	import { haversine_distance } from './helpers.js';
 
 	import Verse from './Verse.svelte';
 
 	export let title;
 		
 	let activeVerseSpan = 1;
-
 	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
 
-	const geoLocationPromise = new Promise((resolve, reject) => {
-		navigator.geolocation.getCurrentPosition(
-			pos => { resolve(pos.coords) },
-			err => { reject(err) }
-		);
-	});	
+	let deviceCoordinates = false, nearbyLocaleTable = [];
+	navigator.geolocation.getCurrentPosition(pos => {
+		deviceCoordinates = pos.coords;
+	});
 
-	setContext('deviceCoordinates', geoLocationPromise);
+	$: if (deviceCoordinates) {
+		nearbyLocaleTable = junctionLocales.map((locale, i) => {
+			let metersFromLocale = haversine_distance(deviceCoordinates, locale) * 1000;
+			// console.log(`${locale.id}: ${locale.description} is ${metersFromLocale}m away`);
+			return { piSliceId: locale.id, nearby: (metersFromLocale <= 30) };
+		}); 
+	};
+
 </script>
 
 <svelte:head>
@@ -28,7 +33,7 @@
 <main id='aiwia'>
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 		<div animate:flip={{duration: 1000}}>
-			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } />
+			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } {nearbyLocaleTable} />
 		</div>
 	{/each}
 </main>
