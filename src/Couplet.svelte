@@ -15,21 +15,31 @@
   $: halfCoupletHeight = Math.round(coupletHeight / 2);
   
   let letters = {a: aLine.split(''), b: bLine.split('')},
-  revealedLetterIds = {a: [], b: []};
+    revealedLetterLimits = {a: 0, b: 0};
   
   $: letterCounts = {a: letters.a.length, b: letters.b.length };  
-  
-  function revealLettersSerially() {
-    let lettersInterval = setInterval(() => {
-      if (revealedLetterIds.a.length < letterCounts.a ) {
-        revealedLetterIds.a = [...revealedLetterIds.a, revealedLetterIds.a.length];
-      } else if (revealedLetterIds.b.length < letterCounts.b) {
-        revealedLetterIds.b = [...revealedLetterIds.b, revealedLetterIds.b.length];
-      } else {
-        clearInterval(lettersInterval);
-        dispatch('allLettersRevealed', coupletIndex);
-      }
-    }, 100);
+
+  function revealNextLetter() {
+    let letterRevealed = false, millisecsUntilNextReveal = 100,
+      endOfLine = false;
+    
+    if (revealedLetterLimits.a < letterCounts.a) {
+      letterRevealed = letters.a[revealedLetterLimits.a];
+      revealedLetterLimits.a = revealedLetterLimits.a + 1;
+      if (revealedLetterLimits.a === letterCounts.a) endOfLine = true;
+    } else if (revealedLetterLimits.b < letterCounts.b) {
+      letterRevealed = letters.b[revealedLetterLimits.b];
+      revealedLetterLimits.b = revealedLetterLimits.b + 1;
+    } else {
+      dispatch('allLettersRevealed', coupletIndex);
+    };
+
+    if (letterRevealed !== false) {
+      if (letterRevealed === ',') millisecsUntilNextReveal = millisecsUntilNextReveal + 600;
+      if (letterRevealed === '–') millisecsUntilNextReveal = millisecsUntilNextReveal + 300;
+      if (endOfLine) millisecsUntilNextReveal = millisecsUntilNextReveal + 1200;
+      setTimeout(() => revealNextLetter(), millisecsUntilNextReveal);
+    };
   };
 
   const hineni = "Here I am";
@@ -53,7 +63,7 @@
       <div class='countdown-leader'>
         <CountdownLeader radiusMax={halfCoupletHeight} emanate={emanate} 
           on:leaderDilated= { () => { showPiSlice = true; } }
-          on:leaderWiped= { () => { showLeader = false; revealLettersSerially() } } />
+          on:leaderWiped= { () => { showLeader = false; revealNextLetter() } } />
       </div>
     {/if}
     {#if showPiSlice}
@@ -63,13 +73,13 @@
   <div class='couplet'>
     <div class='line'>
       {#each letters.a as letter, i}
-        <span class:revealed={revealedLetterIds.a.includes(i)}
+        <span class:revealed={i < revealedLetterLimits.a}
           class='letter'>{letter}</span>
       {/each}
     </div>
     <div class='line'>
       {#each letters.b as letter, i}
-        <span class:revealed={revealedLetterIds.b.includes(i)}
+        <span class:revealed={i < revealedLetterLimits.b}
           class='letter'>{letter}</span>
       {/each}
     </div>
