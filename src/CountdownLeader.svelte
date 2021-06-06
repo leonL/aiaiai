@@ -7,14 +7,15 @@
 
   const fillPercentTween = tweened(100, {duration: 2000}),
     radiusTween = tweened(2, {delay: 750, duration: 2000}),
-    doubleRadiusMax = radiusMax * 2, quadrupleRadiusMax = radiusMax * 4,
     dispatch = createEventDispatcher();
-
-  let doubleR, circumfrence;
+    
+  let doubleR, circumfrence, doubleRadiusMax, quadrupleRadiusMax;
   
   $: {
     doubleR = $radiusTween * 2;
     circumfrence = doubleR * Math.PI;
+    doubleRadiusMax = radiusMax * 2;
+    quadrupleRadiusMax = radiusMax * 4;
   } 
 
   $: if (emanate) {
