@@ -21,7 +21,7 @@ const junctionLocales = [
     id: 4,
     latitude: 43.65804891495306,
     longitude: -79.46747274673983,
-    description: "Mirrored Monks at 132 High Park"
+    description: "The Bridge at 132 High Park"
   },
   {
     id: 5,
