@@ -224,8 +224,8 @@ const amIWhatIAm = [
     couplets: [
       {
         piSlice: 5,
-        a: "impersonating an inscrutable passivity",
-        b: "of the murmuring number never arriving for who" 
+        a: "impersonating the inscrutable passivity",
+        b: "of a murmuring number never arriving for who" 
       },
       {
         piSlice: 0,
