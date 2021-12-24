@@ -1,4 +1,4 @@
-const amIWhatIAm = [
+const hereIAm = [
   {
     verseNumber: 1,
     couplets: [
@@ -235,4 +235,4 @@ const amIWhatIAm = [
     ]
   }
 ];
-export default amIWhatIAm;
+export default hereIAm;

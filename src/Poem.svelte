@@ -1,6 +1,6 @@
 <script>
 	import { flip } from 'svelte/animate';
-	import amIWhatIam from './data/amIWhatIAm.js';
+	import hereIAm from './data/hereIAm.js';
 	import junctionLocales from './data/junctionLocales.js';
 	import { haversineDistance } from './helpers.js';
 
@@ -9,7 +9,7 @@
 	export let title;
 		
 	let activeVerseSpan = 1;
-	$: activeVersesInReverse = amIWhatIam.slice(0, activeVerseSpan).reverse();
+	$: activeVersesInReverse = hereIAm.slice(0, activeVerseSpan).reverse();
 
 	let deviceCoordinates = false, nearbyLocaleTable = [];
 	navigator.geolocation.getCurrentPosition(pos => {
@@ -30,7 +30,7 @@
   <title>{title}</title>
 </svelte:head>
 
-<main id='aiwia'>
+<main id='here-I-am'>
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 		<div animate:flip={{duration: 1000}}>
 			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } {nearbyLocaleTable} />
@@ -39,7 +39,7 @@
 </main>
 
 <style>
-	#aiwia {
+	#here-I-am {
 		display: flex;
 		flex-direction: column-reverse;
 		height: 100%;
