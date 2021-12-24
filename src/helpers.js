@@ -14,7 +14,7 @@ export const minsToMillisecs = function(mins) {
   return millisecs;
 };
 
-export const haversine_distance = function(pointA, pointB) {
+export const haversineDistance = function(pointA, pointB) {
   var R = 6371.0710; // Radius of the Earth in miles
   var rlat1 = pointA.latitude * (Math.PI/180); // Convert degrees to radians
   var rlat2 = pointB.latitude * (Math.PI/180); // Convert degrees to radians
