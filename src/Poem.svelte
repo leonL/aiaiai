@@ -12,6 +12,8 @@
 	let activeVerseSpan = 1;
 	$: activeVersesInReverse = hereIAm.slice(0, activeVerseSpan).reverse();
 
+	let mainWidth;
+
 	let deviceCoordinates = false, nearbyLocaleTable = [];
 	navigator.geolocation.getCurrentPosition(pos => {
 		deviceCoordinates = pos.coords;
@@ -31,8 +33,8 @@
   <title>{title}</title>
 </svelte:head>
 
-<main id='here-I-am'>
-	<Magnifier />
+<main id='here-I-am' bind:clientWidth={mainWidth}>
+	<Magnifier {mainWidth} />
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 		<div animate:flip={{duration: 1000}}>
 			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } {nearbyLocaleTable} />

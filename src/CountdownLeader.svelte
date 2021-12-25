@@ -1,6 +1,6 @@
 <script>
   import { tweened } from 'svelte/motion';
-  import { onMount, createEventDispatcher } from 'svelte';
+  import { createEventDispatcher } from 'svelte';
 
   export let radiusMax;
   export let emanate = false;

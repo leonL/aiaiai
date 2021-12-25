@@ -1,7 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
+  import { revelationChars, revelationCountdown } from './stores.js';
   import CountdownLeader from './CountdownLeader.svelte';
-  import { revelationStore } from './stores.js';
 
   const dispatch = createEventDispatcher();
   
@@ -18,7 +18,11 @@
   let letters = {a: aLine.split(''), b: bLine.split('')},
     revealedLetterLimits = {a: 0, b: 0};
   
-  $: letterCounts = {a: letters.a.length, b: letters.b.length };  
+  $: letterCounts = {a: letters.a.length, b: letters.b.length }; 
+  
+  $: if (emanate && showLeader) {
+    revelationCountdown.update(_ => true);
+  } 
 
   function revealNextLetter() {
     let letterRevealed = false, millisecsUntilNextReveal = 100,
@@ -31,12 +35,19 @@
     } else if (revealedLetterLimits.b < letterCounts.b) {
       letterRevealed = letters.b[revealedLetterLimits.b];
       revealedLetterLimits.b = revealedLetterLimits.b + 1;
+      if (revealedLetterLimits.b === letterCounts.b) endOfLine = true;
     } else {
       dispatch('allLettersRevealed', coupletIndex);
     };
 
     if (letterRevealed !== false) {
-      revelationStore.update(_ => letterRevealed);
+      revelationChars.update(chars => {
+        let nextRevelation = chars + letterRevealed;
+        if (letterRevealed === " " || endOfLine || letterRevealed === ",") {
+          nextRevelation = "";
+        }
+        return nextRevelation;
+      });
       if (letterRevealed === ',') millisecsUntilNextReveal = millisecsUntilNextReveal + 600;
       if (letterRevealed === '–') millisecsUntilNextReveal = millisecsUntilNextReveal + 300;
       if (endOfLine) millisecsUntilNextReveal = millisecsUntilNextReveal + 1200;
