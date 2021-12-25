@@ -4,6 +4,7 @@
 	import junctionLocales from './data/junctionLocales.js';
 	import { haversineDistance } from './helpers.js';
 
+	import Magnifier from './Magnifier.svelte'
 	import Verse from './Verse.svelte';
 
 	export let title;
@@ -31,6 +32,7 @@
 </svelte:head>
 
 <main id='here-I-am'>
+	<Magnifier />
 	{#each activeVersesInReverse as verse, i (verse.verseNumber)}
 		<div animate:flip={{duration: 1000}}>
 			<Verse {verse} on:verseSequenceComplete={ () => activeVerseSpan++ } {nearbyLocaleTable} />

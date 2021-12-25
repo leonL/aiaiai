@@ -1,6 +1,7 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import CountdownLeader from './CountdownLeader.svelte';
+  import { revelationStore } from './stores.js';
 
   const dispatch = createEventDispatcher();
   
@@ -35,6 +36,7 @@
     };
 
     if (letterRevealed !== false) {
+      revelationStore.update(_ => letterRevealed);
       if (letterRevealed === ',') millisecsUntilNextReveal = millisecsUntilNextReveal + 600;
       if (letterRevealed === '–') millisecsUntilNextReveal = millisecsUntilNextReveal + 300;
       if (endOfLine) millisecsUntilNextReveal = millisecsUntilNextReveal + 1200;
